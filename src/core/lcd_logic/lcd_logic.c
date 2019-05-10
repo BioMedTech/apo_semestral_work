@@ -9,7 +9,6 @@ void initData(){
     for (int i=0; i<HEIGHT; i++){
         data[i]=(uint16_t *) calloc (WIDTH, sizeof(uint16_t));
     }
-    // return data;
 }
 
 unsigned char *initDisplay(){
@@ -23,40 +22,64 @@ unsigned char *initDisplay(){
 }
 
 
-void redraw(unsigned char *parlcd_mem_base){
+void redraw(unsigned char *parlcd_mem_base, Cell **playerField){
         parlcd_write_cmd(parlcd_mem_base, 0x2c);
         
-        for (int i=0; i < HEIGHT; i++){
+        int n, m;
+        uint16_t color;
+        for (int i = 0; i < HEIGHT; i++){
             for (int j = 0; j < WIDTH; j++){
-                parlcd_write_data(parlcd_mem_base, data[i][j]);
+                if (j < 15 * CELL_SIZE){
+                    n = i / CELL_SIZE;
+                    m = j / CELL_SIZE;
+                    color = playerField[n][m].state == 0 ? 0x0000 : playerField[n][m].color;
+                    parlcd_write_data(parlcd_mem_base, color);
+                } else {
+                    parlcd_write_data(parlcd_mem_base, 0x0000);
+                }
             }
+               
         }
 }
 
+void redrawData(unsigned char *parlcd_mem_base){
+    parlcd_write_cmd(parlcd_mem_base, 0x2c);
 
-void fillCell(int row, int col, uint16_t color){
-    for (int i = row * CELL_SIZE; i < (row + 1)*CELL_SIZE; i++){
-        for (int j = col * CELL_SIZE; j < (col + 1)* CELL_SIZE; j++) {
+    for (int i = 0; i < HEIGHT; i++)
+    {
+        for (int j = 0; j < WIDTH; j++)
+        {
+            parlcd_write_data2x(parlcd_mem_base, data[i][j]);
+        }
+    }
+}
+
+void fillCell(int row, int col, uint16_t color)
+{
+    for (int i = row * CELL_SIZE; i < (row + 1) * CELL_SIZE; i++)
+    {
+        for (int j = col * CELL_SIZE; j < (col + 1) * CELL_SIZE; j++)
+        {
             data[i][j] = color;
         }
     }
 }
 
-int checkCell(int row, int col){
-
-}
-
-void draw_letter(char letter, int row, int column, uint16_t color, uint16_t bg){
-    for(int i = 0; i < 16; i++){
-        for(int j = 0; j < 8; j++){
-            data[i+row*16][column*8 + j] = (font_rom8x16.bits[(int) letter * 16 + i] >> (15 - j)) & 1 ? color : bg;
+void drawLetter(char letter, int row, int column, uint16_t color, uint16_t bg)
+{
+    for (int i = 0; i < 16; i++)
+    {
+        for (int j = 0; j < 8; j++)
+        {
+            data[i + row * 16][column * 8 + j] = (font_rom8x16.bits[(int)letter * 16 + i] >> (15 - j)) & 1 ? color : bg;
         }
     }
 }
 
-
-void freeData(){
-    for (int i=0; i<HEIGHT; i++){
+void freeData()
+{
+    for (int i = 0; i < HEIGHT; i++)
+    {
         free(data[i]);
     }
     free(data);

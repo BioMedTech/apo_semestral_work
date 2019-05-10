@@ -17,11 +17,12 @@ TARGET_EXE = main
 #TARGET_IP ?= 192.168.202.127
 ifeq ($(TARGET_IP)$(filter run,$(MAKECMDGOALS)),run)
 $(warning The target IP address is not set)
-$(warning Run as "TARGET_IP=192.168.202.211 make run" or modify Makefile)
-TARGET_IP ?= 192.168.202.211
+$(warning Run as "TARGET_IP=192.168.202.204 make run" or modify Makefile)
+TARGET_IP?=192.168.202.204
 endif
-TARGET_DIR ?= /tmp/$(shell whoami)
-TARGET_USER ?= root
+TARGET_IP?=192.168.202.204
+TARGET_DIR?=/tmp/$(shell whoami)
+TARGET_USER?=root
 # for use from Eduroam network use TARGET_IP=localhost and enable next line
 # SSH_OPTIONS=-o "UserKnownHostsFile=/dev/ttyUSB0" -o "StrictHostKeyChecking=no" -o "Port=115200"
 SSH_OPTIONS=-i /opt/zynq/ssh-connect/mzapo-root-key
@@ -101,14 +102,19 @@ $(BUILD_PATH)/%.o: $(SRC_PATH)/%.$(SRC_EXT)
 	$(CC) $(CCFLAGS) $(INCLUDES) -MP -MMD -c $< -o $@
 
 
+connect:
+	ssh $(SSH_OPTIONS) $(TARGET_USER)@$(TARGET_IP)
 
-copy-executable: $(BIN_PATH)/$(BIN_NAME)
+
+copy-executable:
 	ssh $(SSH_OPTIONS) -t $(TARGET_USER)@$(TARGET_IP) killall gdbserver 1>/dev/null 2>/dev/null || true
 	ssh $(SSH_OPTIONS) $(TARGET_USER)@$(TARGET_IP) mkdir -p $(TARGET_DIR)
 	scp $(SSH_OPTIONS) $(BIN_PATH)/$(BIN_NAME) $(TARGET_USER)@$(TARGET_IP):$(TARGET_DIR)/$(BIN_NAME)
+.PHONY: copy-executable
 
 run: copy-executable $(BIN_PATH)/$(BIN_NAME)
 	ssh $(SSH_OPTIONS) -t $(TARGET_USER)@$(TARGET_IP) $(TARGET_DIR)/$(BIN_NAME)
+.PHONY: run
 
 debug: copy-executable $(BIN_PATH)/$(BIN_NAME)
 	xterm -e ssh $(SSH_OPTIONS) -t $(TARGET_USER)@$(TARGET_IP) gdbserver :12345 $(TARGET_DIR)/$(BIN_NAME) &
@@ -116,6 +122,7 @@ debug: copy-executable $(BIN_PATH)/$(BIN_NAME)
 	echo >connect.gdb "target extended-remote $(TARGET_IP):12345"
 	echo >>connect.gdb "b main"
 	echo >>connect.gdb "c"
-	ddd --debugger gdb-multiarch -x connect.gdb $(TARGET_EXE)
+	ddd --debugger gdb-multiarch -x connect.gdb $(BIN_PATH)/$(BIN_NAME)
+.PHONY: debug
 
 -include depend

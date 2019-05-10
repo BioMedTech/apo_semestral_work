@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include "../lcd_logic/lcd_logic.h"
+#include "../lcd_logic/Cell.h"
 
 #define FIGURE_TYPES_QUANTITY 7
 #define FIGURE_CELL_QUANTITY 4
@@ -21,12 +22,16 @@ typedef struct Coords{
 
 typedef struct Figure {
    int type;           
-   uint32_t color;
+   uint16_t color;
    struct Coords offset;
    struct Coords state[4];
 } Figure;
 
-void initRandomFigure();
+int checkFullRow(int row, Cell **gameField);
+Figure *initRandomFigure(Cell **gameField);
+void removeRow(int row, Cell **gameField);
+int moveFigure(int vector_x, int vector_y, Figure *figure, Cell **gameField);
+void rotateFigure(Figure *figure, int clock, Cell **gameField);
 // void initRandomFigure()
 /*
 

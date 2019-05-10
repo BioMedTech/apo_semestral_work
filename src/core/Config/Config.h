@@ -11,14 +11,9 @@ enum PlayerMode {
 
 typedef struct PlayerConfig {
     enum PlayerMode mode;
-    struct Level level;
+    int level;
 } PlayerConfig;
 
-
-
-typedef struct BoardConfig {
-    uint16_t **data;
-    unsigned char *parlcd_mem_base;
-} BoardConfig;
+PlayerConfig *initPlayerConfig();
 
 #endif //MZAPO_TEMPLATE_CONFIG_H
