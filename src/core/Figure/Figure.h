@@ -14,6 +14,9 @@
 #define FIGURE_TYPES_QUANTITY 7
 #define FIGURE_CELL_QUANTITY 4
 
+#define GAME_FIELD_WIDTH 15
+#define GAME_FIELD_HEIGHT 20
+
 typedef struct Coords{
    int x;
    int y;

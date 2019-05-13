@@ -11,7 +11,10 @@ static uint16_t colors[] = {
     0x07E0,
     //blue
     0x001F,
-    0x4353
+    //lightblue
+    0x07FF,
+    //yellow
+    0xFFE0
 };
 
 static int figures[] = {
@@ -44,7 +47,8 @@ static int figures[] = {
      I
     ****
     */
-    -1, 0, 0, 0, 1, 0, 2, 0};
+    -1, 0, 0, 0, 1, 0, 2, 0
+    };
 
 Figure *initRandomFigure(Cell **gameField)
 {
@@ -53,29 +57,28 @@ Figure *initRandomFigure(Cell **gameField)
     figure->offset.x = 5;
     figure->offset.y = 1;
 
-    figure->color = colors[random() % 4];
+    figure->color = colors[random() % 5];
 
     for (int i = figure->type * 8, n = 0; i < (figure->type + 1) * 8; i += 2, n++)
     {
         figure->state[n].x = figures[i];
         figure->state[n].y = figures[i + 1];
+        
+        gameField[i+1][i].state = 2;
+        gameField[i+1][i].color = figure->color;
     }
 
-    changePlayerField(figure, gameField, 2);
     return figure;
 }
 
 int moveFigure(int vector_x, int vector_y, Figure* figure, Cell **gameField){
-    printf("Moving figure to vector x: %d, y: %d\n", vector_x, vector_y);
-    // int prev_x = figure->offset.x;
-    // int prev_y = figure->offset.y;
+    // printf("Moving figure to vector x: %d, y: %d\n", vector_x, vector_y);
 
     int success = 1;
     int x, y;
-
     
     int collision = willCollide(figure, vector_x, vector_y, gameField);
-    
+
     if (!collision)
     {
         for (int i = 0; i < FIGURE_CELL_QUANTITY; i++)
@@ -103,13 +106,10 @@ int moveFigure(int vector_x, int vector_y, Figure* figure, Cell **gameField){
                 gameField[y][x].color = figure->color;
             // }
         }
-    } else if (collision == 1){
+    } else if (collision == 1 && vector_y){
         success = 0;
-        // figure->offset.x = prev_x;
-        // figure->offset.y = prev_y;
         printf("Collision detected!\n");
         changePlayerField(figure, gameField, 1);
-    
     }
     
     return success;
@@ -117,7 +117,6 @@ int moveFigure(int vector_x, int vector_y, Figure* figure, Cell **gameField){
 
 void rotateFigure(Figure *figure, int clock, Cell **gameField)
 {
-
     //rotation matrix 90 degrees
     //(cos 90 -sin 90)=(0 -1)(x)=(-y)
     //(sin 90  cos 90) (1  0)(y) ( x)
@@ -126,20 +125,13 @@ void rotateFigure(Figure *figure, int clock, Cell **gameField)
     //(cos -90 -sin -90)=( 0  1)(x)=( y)
     //(sin -90  cos -90) (-1  0)(y) (-x)
 
-
-    
     if (figure->type != 0){
         Coords testCoords[4];
-        memcpy(testCoords, figure->state, sizeof(Coords)*4);
+        memcpy(testCoords, figure->state, sizeof(Coords) * 4);
         
-
-        int x_mult = 1;
-        int y_mult = -1;
-        
-        if (clock){
-            x_mult = -1;
-            y_mult = 1;
-        }
+        int x_mult = clock ? -1 : 1;
+        int y_mult = clock ? 1 : -1;
+    
         int x, y, x1, collision=0;
 
         for (int i = 0; i < FIGURE_CELL_QUANTITY; i++)
@@ -151,21 +143,17 @@ void rotateFigure(Figure *figure, int clock, Cell **gameField)
             x = testCoords[i].x + figure->offset.x;
             y = testCoords[i].y + figure->offset.y;
 
-        if (y >= 20 || x < 0 || x>=15 || gameField[y][x].state == 1)
-             collision=1;
+        if (y >= GAME_FIELD_HEIGHT || x < 0 || x >= GAME_FIELD_WIDTH || gameField[y][x].state == 1)
+             collision = 1;
         }
+
         if (!collision){
             for (int i = 0; i < FIGURE_CELL_QUANTITY; i++)
             {
-                x = figure->state[i].x + figure->offset.x;
-                y = figure->state[i].y + figure->offset.y;
-                
-                gameField[y][x].state = 0;
-                
+                gameField[figure->state[i].y + figure->offset.y][figure->state[i].x + figure->offset.x].state = 0;   
             }
 
             memcpy(figure->state, testCoords, sizeof(Coords) * 4);
-            printf("Test coords moved to normal coords\n");
 
             for (int i = 0; i < FIGURE_CELL_QUANTITY; i++)
             {
@@ -181,7 +169,7 @@ void rotateFigure(Figure *figure, int clock, Cell **gameField)
 }
 
 int checkFullRow(int row, Cell **gameField){
-    for (int i = 0; i < 15; i++){
+    for (int i = 0; i < GAME_FIELD_WIDTH; i++){
         if (!gameField[row][i].state){
             return 0;
         }
@@ -203,9 +191,11 @@ void changePlayerField(Figure *figure, Cell **gameField, int state)
     {
         x = figure->state[i].x + figure->offset.x;
         y = figure->state[i].y + figure->offset.y;
-        printf("Coords %d %d, state %d\n", x, y, state);
         gameField[y][x].state = state;
         gameField[y][x].color = figure->color;
+        if (checkFullRow(y, gameField)){
+            // removeRow(y, gameField);
+        }
     }
 }
 
@@ -215,19 +205,13 @@ int willCollide(Figure *figure, int vector_x, int vector_y, Cell **gameField)
     int x, y;
     for (int i = 0; i < FIGURE_CELL_QUANTITY; i++)
     {
-        x = figure->state[i].x + figure->offset.x+vector_x;
-        y = figure->state[i].y + figure->offset.y+vector_y;
+        x = figure->state[i].x + figure->offset.x + vector_x;
+        y = figure->state[i].y + figure->offset.y + vector_y;
 
         if (x < 0 || x >= 15 || y >= 20 || gameField[y][x].state == 1)
         {
-            collision = 2;
+            collision = 1;
         } 
-        if (y >= 20 || (gameField[y][x].state == 1 && vector_y))
-        {
-            printf("Collision\n");
-            collision=1;
-            break;
-        }
     }
 
     return collision;

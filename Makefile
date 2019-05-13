@@ -4,7 +4,7 @@ CXX = arm-linux-gnueabihf-g++
 CPPFLAGS = -I .
 CFLAGS =-g -std=gnu99 -O1 -Wall
 CXXFLAGS = -g -std=gnu++11 -O1 -Wall
-LDFLAGS = -lrt -lpthread
+LDFLAGS = -lrt -lpthread -luuid
 
 SRC_EXT = c
 SRC_PATH = src

@@ -51,8 +51,7 @@ void lights_init()
 
 void *gameThread(void *vargp) {
     Game *game = (Game *)vargp;
-    printMenu();
-    // playGame(game);
+    playGame(game);
 }
 
 void *serverThread(void *vargp) {

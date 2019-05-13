@@ -15,7 +15,6 @@
 typedef struct Level{
     int number;
     int speed;
-    char *title;
 } Level;
 
 Level **getAllLevels();

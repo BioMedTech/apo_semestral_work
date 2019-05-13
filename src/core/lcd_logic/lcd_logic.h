@@ -37,5 +37,6 @@ void redraw(unsigned char *parlcd_mem_base, Cell **playerField);
 void fillCell(int row, int col, uint16_t color);
 void drawLetter(char letter, int row, int column, uint16_t color, uint16_t bg);
 void redrawData(unsigned char *parlcd_mem_base);
+void drawString(char *str, int row, int column, int16_t color, uint16_t bg);
 
 #endif //MZAPO_TEMPLATE_GRID_H

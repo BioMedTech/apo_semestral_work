@@ -23,14 +23,14 @@
 #define BLUE 0x001F
 
 typedef struct Game {
-    struct PlayerConfig * playerConfig;
-    struct Player * currentPlayer;
+    struct PlayerConfig *playerConfig;
+    struct Player *currentPlayer;
     struct Player *opponent;
     struct Figure *currentFigure;
 } Game;
 
 Game *initGame();
 void playGame(Game *game);
-void printMenu();
+void printMenu(Game *game);
 
 #endif //MZAPO_TEMPLATE_GAME_H

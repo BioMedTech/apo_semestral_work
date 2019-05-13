@@ -76,6 +76,13 @@ void drawLetter(char letter, int row, int column, uint16_t color, uint16_t bg)
     }
 }
 
+void drawString(char *str, int row, int column, int16_t color, uint16_t bg)
+{
+    for (int i=0; i<strlen(str); i++){
+        drawLetter(str[i], row, column+i, color, bg);
+    }
+}
+
 void freeData()
 {
     for (int i = 0; i < HEIGHT; i++)
