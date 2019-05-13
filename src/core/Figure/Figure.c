@@ -64,19 +64,22 @@ Figure *initRandomFigure(Cell **gameField)
         figure->state[n].x = figures[i];
         figure->state[n].y = figures[i + 1];
         
-        gameField[i+1][i].state = 2;
-        gameField[i+1][i].color = figure->color;
+        gameField[figures[i + 1] + figure->offset.y][figures[i] + figure->offset.x].color = figure->color;
+        gameField[figures[i + 1] + figure->offset.y][figures[i] + figure->offset.x].state = 2;
     }
 
     return figure;
 }
 
-int moveFigure(int vector_x, int vector_y, Figure* figure, Cell **gameField){
+int moveFigure(int vector_x, int vector_y, Figure *figure, Player *player)
+{
     // printf("Moving figure to vector x: %d, y: %d\n", vector_x, vector_y);
 
     int success = 1;
     int x, y;
-    
+
+    Cell **gameField=player->game_field;
+
     int collision = willCollide(figure, vector_x, vector_y, gameField);
 
     if (!collision)
@@ -108,8 +111,7 @@ int moveFigure(int vector_x, int vector_y, Figure* figure, Cell **gameField){
         }
     } else if (collision == 1 && vector_y){
         success = 0;
-        printf("Collision detected!\n");
-        changePlayerField(figure, gameField, 1);
+        changePlayerField(figure, player, 1);
     }
     
     return success;
@@ -143,7 +145,7 @@ void rotateFigure(Figure *figure, int clock, Cell **gameField)
             x = testCoords[i].x + figure->offset.x;
             y = testCoords[i].y + figure->offset.y;
 
-        if (y >= GAME_FIELD_HEIGHT || x < 0 || x >= GAME_FIELD_WIDTH || gameField[y][x].state == 1)
+        if (y >= GAME_FIELD_HEIGHT || y<0 || x < 0 || x >= GAME_FIELD_WIDTH || gameField[y][x].state == 1)
              collision = 1;
         }
 
@@ -177,25 +179,51 @@ int checkFullRow(int row, Cell **gameField){
     return 1;
 }
 
-void removeRow(int row, Cell **gameField){
+int removeRow(int row, Cell **gameField){
+    int count=1;
     for (int i = row; i > 1; i--){
-        memcpy(&gameField[i], &(gameField[i-1]), sizeof(Cell)*15);
+        memcpy(gameField[i], gameField[i-1], sizeof(Cell) * GAME_FIELD_WIDTH);
     }
+    for (int i=0; i < GAME_FIELD_WIDTH; i++){
+        gameField[0][i].state = 0;
+    }
+    if (checkFullRow(row, gameField))
+    {
+        removeRow(row, gameField);
+        count++;
+    }
+    return count;
 }
 
 
-void changePlayerField(Figure *figure, Cell **gameField, int state)
+void changePlayerField(Figure *figure, Player *player, int state)
 {
     int x, y;
+    Cell **gameField=player->game_field;
+    
     for (int i = 0; i < FIGURE_CELL_QUANTITY; i++)
     {
         x = figure->state[i].x + figure->offset.x;
         y = figure->state[i].y + figure->offset.y;
+       
         gameField[y][x].state = state;
         gameField[y][x].color = figure->color;
-        if (checkFullRow(y, gameField)){
-            // removeRow(y, gameField);
+    }
+    int count = 0;
+
+    for (int i = 0; i < FIGURE_CELL_QUANTITY; i++)
+    {
+        y = figure->state[i].y + figure->offset.y;
+        
+        if (checkFullRow(y, gameField))
+        {
+            count+=removeRow(y, gameField);
         }
+    }
+    if (count) {
+        player->score += 600 * player->level/(4-count);
+        setLedValues(0xFF0000);
+        setLedValues(0x0);
     }
 }
 

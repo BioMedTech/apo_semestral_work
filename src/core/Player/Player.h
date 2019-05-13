@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
-#include <uuid/uuid.h>
+// #include <uuid/uuid.h>
 
 #include "../lcd_logic/Cell.h"
 
@@ -14,14 +14,20 @@ enum GameStatus {
     GAME_END
 } GameStatus;
 
+enum PlayerMode
+{
+    ONE_PLAYER,
+    TWO_PLAYERS
+} PlayerMode;
 
 typedef struct Player {
     char *username;
     int score;
     struct Cell **game_field;
-    struct uuid_t id;
     char ip[256];
     enum GameStatus status;
+    enum PlayerMode mode;
+    int level;
 } Player;
 
 Player *initPlayer();

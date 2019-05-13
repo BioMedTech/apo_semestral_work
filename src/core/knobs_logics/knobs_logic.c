@@ -1,14 +1,13 @@
 #include "knobs_logic.h"
 
+unsigned char *mem_base;
 
-unsigned char * init_knobs(){
-    unsigned char *mem_base;
+void init_knobs(){
     mem_base = map_phys_address(SPILED_REG_BASE_PHYS, SPILED_REG_SIZE, 0);
     // if (mem_base == NULL) exit(1);
-    return mem_base;
 }
 
-Knobs_state getKnobsValue(unsigned char *mem_base){
+Knobs_state getKnobsValue(){
     uint32_t rgb_knobs_value;
     rgb_knobs_value = *(volatile uint32_t*)(mem_base + SPILED_REG_KNOBS_8BIT_o);
     int rk, gk, bk, rb, gb, bb;
@@ -29,4 +28,10 @@ Knobs_state getKnobsValue(unsigned char *mem_base){
                           
      return state;
 
+}
+
+void setLedValues(uint32_t color)
+{
+    *(volatile uint32_t *)(mem_base + SPILED_REG_LED_RGB1_o) = color;
+    *(volatile uint32_t *)(mem_base + SPILED_REG_LED_RGB2_o) = color;
 }

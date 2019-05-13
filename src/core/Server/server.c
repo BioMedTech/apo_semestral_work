@@ -1,36 +1,37 @@
 #include "server.h"
 
-void runServer(Game *currentGame){
+void runServer(Game *game){
      int _socket, nBytes;
     struct sockaddr_in serverAddr, clientAddr;
     socklen_t serverAddrSize, clientAddrSize;
+    struct ifreq ifr;
 
     /*Create UDP socket*/
     _socket = socket(PF_INET, SOCK_DGRAM, 0);
 
+    ifr.ifr_addr.sa_family = AF_INET;
     /*Configure settings in address struct*/
     serverAddr.sin_family = AF_INET;
     serverAddr.sin_port = htons(TARGET_PORT);
-   
     serverAddr.sin_addr.s_addr = INADDR_ANY;
     memset(serverAddr.sin_zero, '\0', sizeof serverAddr.sin_zero);
 
+    strncpy(ifr.ifr_name, "eth0", IFNAMSIZ-1);
+    ioctl(_socket, SIOCGIFADDR, &ifr);
+
+    printf("My ip: %s\n", inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr));
     /*Bind socket with address struct*/
     if (bind(_socket, (struct sockaddr *) &serverAddr, sizeof(serverAddr)) == SO_ERROR) {
-        if (VERBOSE) printf("Bind error!");
         return 1;
     }
-
-    setTimeout(_socket);
 
     /*Initialize size variable to be used later on*/
     serverAddrSize = sizeof serverAddr;
     clientAddrSize = sizeof clientAddr;
 
-    Game *game = (Game *)calloc(1, sizeof(Game));
-
     int _continue = 1;
    
+    printf("Server is listening on port %d\n", TARGET_PORT);
     while (_continue) {
         if (nBytes = recvfrom(_socket, game->opponent, sizeof(Player), 0, (struct sockaddr *) &clientAddr,
                                 &clientAddrSize) == SO_ERROR) {
@@ -38,14 +39,17 @@ void runServer(Game *currentGame){
             getchar();
             return 1;
         }
-        if (game->opponent->status==GAME_INIT && game->opponent.id!=game->currentPlayer.id){
+        char *ip = inet_ntoa(clientAddr.sin_addr);
+     
+        if (game->opponent->status==GAME_INIT && !strcmp(game->currentPlayer->ip, ip)){
             _continue = 0;
-            // sendto(_socket, currentGame->currentPlayer, sizeof(game), 0, (struct sockaddr *) &clientAddr, clientAddrSize);
-            game->opponent->ip = inet_ntoa(clientAddr.sin_addr.s_addr);
+            strcpy(game->opponent->ip, ip);
         }
     }
 
     int gameContinue = 1;
+    game->currentPlayer->status == GAME_INIT;
+
     while (gameContinue){
         if (nBytes = recvfrom(_socket, game->opponent, sizeof(Player), 0, (struct sockaddr *) &clientAddr,
                                 &clientAddrSize) == SO_ERROR) {
@@ -69,7 +73,7 @@ void runClient(Game *game){
 
     int yes = 1;
     if (setsockopt(_socketClient, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes)) == -1 || 
-    s   etsockopt(_socketClient, SOL_SOCKET, SO_BROADCAST, &yes, sizeof(yes)) == -1) {
+    setsockopt(_socketClient, SOL_SOCKET, SO_BROADCAST, &yes, sizeof(yes)) == -1) {
         perror("cannot set socket options");
         exit(1);
     }
@@ -84,26 +88,27 @@ void runClient(Game *game){
     char ipbuf[16];
 
     unsigned int len = sizeof(broadcast);
-    do {
-        for (int a = 0; !game->opponent->ip && a < 255; ++a) {
-            snprintf(ipbuf, sizeof ipbuf, "147.32.216.%d", a);
-            printf("Sending to: %s\n", ipbuf);
-            broadcast.sin_addr.s_addr = inet_addr(ipbuf);
+    int a=0;
     
-            if (sendto(_socketClient, game->currentPlayer, sizeof(Player), 0, (const struct sockaddr *)&broadcast, len) < 0)
-                printf("Error sending update.\n");
-        }
+    do {
+       snprintf(ipbuf, sizeof ipbuf, "192.168.202.%d", a);
+       printf("Sending to: %s\n", ipbuf);
+       broadcast.sin_addr.s_addr = inet_addr(ipbuf);
+
+       if (sendto(_socketClient, game->currentPlayer, sizeof(Player), 0, (const struct sockaddr *)&broadcast, len) < 0)
+           printf("Error sending update.\n");  
+
+        a++;
+    } while (!game->opponent->ip);
+
+    do {
+        if (sendto(_socketClient, game->currentPlayer, sizeof(Player), 0, (const struct sockaddr *)&broadcast, len) < 0)
+            printf("Error sending update.\n");   
 
         sleep(3);
-      
-        // if (opponent && once){
-        //    printf("%s\n", opponent);
-        //    broadcast.sin_addr.s_addr =inet_addr(opponent);
-        //    once = 0;
-        // }
-    } while(1);
 
-    free(buffer);
+    } while(game->currentPlayer->status != GAME_END);
+
     printf("Ending update sender...\n");
     return NULL;
 }

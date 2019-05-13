@@ -28,6 +28,7 @@
 #include "core/Game/Game.h"
 #include "core/knobs_logics/knobs_logic.h"
 #include "core/Figure/Figure.h"
+#include "core/Server/server.h"
 
 
 uint32_t *first_led;
@@ -35,10 +36,9 @@ uint32_t *second_led;
 uint32_t *led_controller;
 
 pthread_t game_thread;
-pthread_t knobs_thread;
+pthread_t client_thread;
 pthread_t server_thread;
 
-Figure *currentFigure;
 unsigned char *mem;
 
 void lights_init()
@@ -54,27 +54,17 @@ void *gameThread(void *vargp) {
     playGame(game);
 }
 
-void *serverThread(void *vargp) {
-    sleep(1);
-    while(1){
-        // printf("Printing from Thread 3\n");
-        sleep(2);
-    }
-    return NULL;
-}
-
 
 void initTreads(Game *game) {
     pthread_create(&game_thread, NULL, gameThread, game);
-    // pthread_create(&knobs_thread, NULL, knobsThread, game);
-    pthread_create(&server_thread, NULL, serverThread, game);
+    pthread_create(&server_thread, NULL, runServer, game);
+    pthread_create(&client_thread, NULL, runClient, game);
 }
 
 void endThreads(){
     pthread_join(game_thread, NULL);
-    // pthread_join(knobs_thread, NULL);
     pthread_join(server_thread, NULL);
-
+    pthread_join(client_thread, NULL);
 }
 
 void set_lights(uint32_t val) {
@@ -86,78 +76,16 @@ void set_lights(uint32_t val) {
 
 
 int main(int argc, char *argv[]) {
-    // initData();
     Game *game = initGame();
+    printMenu(game);
     printf("\nGame was initalized\n");
+
+    if (game->currentPlayer->mode==TWO_PLAYERS){
+        initTreads(game);
+        endThreads();
+    } else {
+        playGame(game);
+    }
     
-    initTreads(game);
-    endThreads();
-        // while(1){
-        //     getKnobsValue(knob_mem);
-        // }
-
-        // data=calloc(3, sizeof(int));
-        // Game *game = initGame();
-
-        // initTreads(game);
-        // endThreads(game);
-
-        // pthread_attr_t attr;
-        // pthread_attr_init(&attr);
-        // pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
-
-        //    lights_init();
-        //    set_lights(0x252525);
-        //    uint32_t *knobs = map_phys_address(SPILED_REG_BASE_PHYS + SPILED_REG_KNOBS_8BIT_o, 4, 0);
-
-        // while(1){
-        //  printf("%x\n", *knobs);
-        // //  set_lights(*knobs);
-        // }
-
-        // unsigned char *parlcd_mem_base;
-        // int i, j;
-        // unsigned c;
-
-        // parlcd_mem_base = map_phys_address(PARLCD_REG_BASE_PHYS, PARLCD_REG_SIZE, 0);
-
-        // if (parlcd_mem_base == NULL)
-        //   exit(1);
-
-        // parlcd_hx8357_init(parlcd_mem_base);
-
-        // parlcd_write_cmd(parlcd_mem_base, 0x2c);
-        // for (i = 0; i < 320 ; i++) {
-        //   for (j = 0; j < 480 ; j++) {
-        //     c = 0;
-        //     parlcd_write_data(parlcd_mem_base, c);
-        //   }
-        // }
-
-        // parlcd_write_cmd(parlcd_mem_base, 0x2c);
-        // for (i = 0; i < 320 ; i++) {
-        //   for (j = 0; j < 480 ; j++) {
-        //     c = ((i & 0x1f) << 11) | (j & 0x1f);
-        //     if (i < 10)
-        //       c |= 0x3f << 5;
-        //     if (j < 10)
-        //       c |= 0x3f << 5;
-        //     parlcd_write_data(parlcd_mem_base, c);
-        //   }
-        // }
-
-        // while (0) {
-        //    struct timespec loop_delay = {.tv_sec = 0, .tv_nsec = 200 * 1000 * 1000};
-
-        //    *(volatile uint16_t*)(parlcd_mem_base + PARLCD_REG_DATA_o) = 0x0001;
-        //    *(volatile uint16_t*)(parlcd_mem_base + PARLCD_REG_DATA_o) = 0x0002;
-        //    *(volatile uint16_t*)(parlcd_mem_base + PARLCD_REG_DATA_o) = 0x0004;
-        //    *(volatile uint16_t*)(parlcd_mem_base + PARLCD_REG_DATA_o) = 0x0008;
-        //    *(volatile uint32_t*)(parlcd_mem_base + PARLCD_REG_DATA_o) = 0x0010;
-        //    *(volatile uint16_t*)(parlcd_mem_base + PARLCD_REG_DATA_o) = 0x0020;
-
-        //    clock_nanosleep(CLOCK_MONOTONIC, 0, &loop_delay, NULL);
-        // }
-
-        return 0;
+    return 0;
 }

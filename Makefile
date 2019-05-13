@@ -17,10 +17,10 @@ TARGET_EXE = main
 #TARGET_IP ?= 192.168.202.127
 ifeq ($(TARGET_IP)$(filter run,$(MAKECMDGOALS)),run)
 $(warning The target IP address is not set)
-$(warning Run as "TARGET_IP=192.168.202.204 make run" or modify Makefile)
-TARGET_IP?=192.168.202.204
+$(warning Run as "TARGET_IP=192.168.202.203 make run" or modify Makefile)
+TARGET_IP?=192.168.202.203
 endif
-TARGET_IP?=192.168.202.204
+TARGET_IP?=192.168.202.203
 TARGET_DIR?=/tmp/$(shell whoami)
 TARGET_USER?=root
 # for use from Eduroam network use TARGET_IP=localhost and enable next line
@@ -51,7 +51,7 @@ OBJECTS = $(SOURCES:$(SRC_PATH)/%.$(SRC_EXT)=$(BUILD_PATH)/%.o)
 DEPS = $(OBJECTS:.o=.d)
 
 # flags #
-COMPILE_FLAGS = -std=c99 -Wall -Wextra -g -pthread
+COMPILE_FLAGS = -std=gnu99 -Wall -Wextra -g -pthread
 INCLUDES = -I include/ -I /usr/local/include
 LDFLAGS = -lrt -pthread
 # Space-separated pkg-config libraries used by this project
@@ -109,11 +109,11 @@ connect:
 copy-executable:
 	ssh $(SSH_OPTIONS) -t $(TARGET_USER)@$(TARGET_IP) killall gdbserver 1>/dev/null 2>/dev/null || true
 	ssh $(SSH_OPTIONS) $(TARGET_USER)@$(TARGET_IP) mkdir -p $(TARGET_DIR)
-	scp $(SSH_OPTIONS) $(BIN_PATH)/$(BIN_NAME) $(TARGET_USER)@$(TARGET_IP):$(TARGET_DIR)/$(BIN_NAME)
+	scp $(SSH_OPTIONS) $(BIN_PATH)/$(BIN_NAME) index.bmp $(TARGET_USER)@$(TARGET_IP):$(TARGET_DIR)/
 .PHONY: copy-executable
 
 run: copy-executable $(BIN_PATH)/$(BIN_NAME)
-	ssh $(SSH_OPTIONS) -t $(TARGET_USER)@$(TARGET_IP) $(TARGET_DIR)/$(BIN_NAME)
+	ssh $(SSH_OPTIONS) -t $(TARGET_USER)@$(TARGET_IP) "cd $(TARGET_DIR) && ./$(BIN_NAME)"
 .PHONY: run
 
 debug: copy-executable $(BIN_PATH)/$(BIN_NAME)

@@ -10,12 +10,11 @@
 #include <stdint.h>
 #include "../lcd_logic/lcd_logic.h"
 #include "../lcd_logic/Cell.h"
+#include "../Player/Player.h"
+#include "../knobs_logics/knobs_logic.h"
 
-#define FIGURE_TYPES_QUANTITY 7
+#define FIGURE_TYPES_QUANTITY 4
 #define FIGURE_CELL_QUANTITY 4
-
-#define GAME_FIELD_WIDTH 15
-#define GAME_FIELD_HEIGHT 20
 
 typedef struct Coords{
    int x;
@@ -32,9 +31,10 @@ typedef struct Figure {
 
 int checkFullRow(int row, Cell **gameField);
 Figure *initRandomFigure(Cell **gameField);
-void removeRow(int row, Cell **gameField);
-int moveFigure(int vector_x, int vector_y, Figure *figure, Cell **gameField);
+int removeRow(int row, Cell **gameField);
+int moveFigure(int vector_x, int vector_y, Figure *figure, Player *player);
 void rotateFigure(Figure *figure, int clock, Cell **gameField);
+int willCollide(Figure *figure, int vector_x, int vector_y, Cell **gameField);
 // void initRandomFigure()
 /*
 

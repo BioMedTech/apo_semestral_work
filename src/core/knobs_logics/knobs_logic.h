@@ -10,7 +10,8 @@ typedef struct Knobs_state{
 } Knobs_state;
 
 
-unsigned char * init_knobs();
-Knobs_state getKnobsValue(unsigned char *mem_base);
+void init_knobs();
+Knobs_state getKnobsValue();
+void setLedValues(uint32_t color);
 
 #endif //MZAPO_TEMPLATE_KNOBS_H

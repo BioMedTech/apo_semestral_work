@@ -2,6 +2,9 @@
 #define MZAPO_TEMPLATE_CELL_H
 #include <stdint.h>
 
+#define GAME_FIELD_WIDTH 15
+#define GAME_FIELD_HEIGHT 20
+
 typedef struct Cell
 {
     uint16_t color;
