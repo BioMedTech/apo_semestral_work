@@ -221,7 +221,7 @@ void changePlayerField(Figure *figure, Player *player, int state)
         }
     }
     if (count) {
-        player->score += 600 * player->level/(4-count);
+        player->score += 600 * (player->level + 1)/(4-count);
         setLedValues(0xFF0000);
         setLedValues(0x0);
     }

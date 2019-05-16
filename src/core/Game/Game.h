@@ -25,6 +25,7 @@ typedef struct Game {
     struct Player *currentPlayer;
     struct Player *opponent;
     struct Figure *currentFigure;
+    struct Figure *nextFigure;
 } Game;
 
 Game *initGame();

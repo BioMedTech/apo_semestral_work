@@ -94,29 +94,26 @@ void drawString(char *str, int row, int column, int16_t color, uint16_t bg)
 
 void fillBgImg(char *filename)
 {
-    printf("Hello w\n");
     FILE *file = fopen(filename, "r");
-    
 
     int rows = 320;
     int cols = 480;
     int max_intensity = 0;
 
-    // fscanf(file, "P6 %d %d %d\n", &cols, &rows, &max_intensity);
+    fscanf(file, "P6 %d %d %d\n", &cols, &rows, &max_intensity);
 
-    uint16_t *img= (uint16_t *)calloc(sizeof(uint16_t), rows * cols);
+    uint16_t *img= (uint16_t *)calloc(sizeof(uint16_t), rows * cols * 3);
 
     fread(img, sizeof(uint16_t), rows * cols, file);
 
     fclose(file);
-    
+
     for (int i=0; i < rows && i < HEIGHT; i++){
         for (int j = 0; j < cols && j < WIDTH; j++){
-            data[HEIGHT * i + j] = img[cols * i + j];
+            data[HEIGHT * i + j] = ((img[(cols * i + j) * 3] & 0xf8) << 8) | (((img[(cols * i + j)*3 + 1] & 0xfc) << 3) | (img[(cols * i + j)*3 + 2] >> 3);
         }
     }
     free(img);
-
 }
 
 void clearData()

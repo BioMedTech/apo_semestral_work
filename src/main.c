@@ -30,62 +30,62 @@
 #include "core/Figure/Figure.h"
 #include "core/Server/server.h"
 
-
-uint32_t *first_led;
-uint32_t *second_led;
-uint32_t *led_controller;
-
-pthread_t game_thread;
-pthread_t client_thread;
-pthread_t server_thread;
+pthread_t game_thread, client_thread, server_thread, light_thread;
+pthread_mutex_t display_mutex, light_mutex;
 
 unsigned char *mem;
-
-void lights_init()
-{
-    led_controller = map_phys_address(SPILED_REG_BASE_PHYS + SPILED_REG_LED_KBDWR_DIRECT_o, 4, 0);
-    // first_led = map_phys_address(SPILED_REG_BASE_PHYS +  SPILED_REG_LED_KBDWR_DIRECT_o, 2, 0);
-    // second_led = map_phys_address(SPILED_REG_BASE_PHYS +  SPILED_REG_LED_KBDWR_DIRECT_o + 2, 2, 0);
-
-}
 
 void *gameThread(void *vargp) {
     Game *game = (Game *)vargp;
     playGame(game);
 }
 
+void *lightThread(){
+    while(1){
+        // Check if the value of light was changed
+        sleep(3);
+    }
+}
 
 void initTreads(Game *game) {
     pthread_create(&game_thread, NULL, gameThread, game);
     pthread_create(&server_thread, NULL, runServer, game);
-    pthread_create(&client_thread, NULL, runClient, game);
 }
 
-void endThreads(){
+void initServerThreads(Game *game){
+    pthread_create(&client_thread, NULL, runClient, game);
+    pthread_create(&light_thread, NULL, lightThread, NULL);
+}
+
+void initMutex(){
+    pthread_mutex_init(&display_mutex, NULL);
+    pthread_mutex_init(&light_mutex, NULL);
+}
+
+void joinThreads(){
     pthread_join(game_thread, NULL);
+    pthread_join(light_thread, NULL);
+}
+
+void joinServerThreads(){
     pthread_join(server_thread, NULL);
     pthread_join(client_thread, NULL);
 }
 
-void set_lights(uint32_t val) {
-    *led_controller = val;
-    *(led_controller + 2) = val;
-    printf("%x\n", *led_controller);
-    printf("%x\n", *led_controller + 2);
-}
-
-
 int main(int argc, char *argv[]) {
     Game *game = initGame();
     printMenu(game);
-    printf("\nGame was initalized\n");
+    printf("\n------\n------\n------\n   ||\n   ||\n   ||\n    -\nGame was initalized\n");
 
-    if (game->currentPlayer->mode==TWO_PLAYERS){
-        initTreads(game);
-        endThreads();
-    } else {
-        playGame(game);
+    initMutex();
+ 
+    if (game->currentPlayer->mode == TWO_PLAYERS){
+        initServerThreads(game);
+        joinServerThreads();
     }
-    
+
+    initTreads(game);
+    joinThreads();
+   
     return 0;
 }

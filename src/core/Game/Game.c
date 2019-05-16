@@ -11,6 +11,7 @@ Game *initGame()
     Game *newGame = (Game *)calloc(1, sizeof(Game));
     newGame->currentPlayer = initPlayer();
     newGame->currentFigure = initRandomFigure(newGame->currentPlayer->game_field);
+    newGame->nextFigure = initRandomFigure(newGame->currentPlayer->game_field);
 
     return newGame;
 }
@@ -18,7 +19,6 @@ Game *initGame()
 
 void printMenu(Game *game){
     initData();
-    fillBgImg("/tmp/mozguana/index.bmp");
     init_knobs();
 
     uint16_t color_one_player = BLUE;
@@ -30,7 +30,7 @@ void printMenu(Game *game){
     int _continue = 1;
 
     clearData();
-    fillBgImg("/tmp/mozguana/index.bmp");
+    fillBgImg("/tmp/mozguana/logo.ppm");
     drawString("TETRIS", 3, 8, RED, 0x0);
     redrawData(mem);
 
@@ -182,21 +182,23 @@ void playGame(Game *game)
         } 
 
         new_state = getKnobsValue();
+        // pthread_mutex_lock(display_mutex);
         redraw(mem, game->currentPlayer->game_field);
       
         if (!success)
         {
-            Figure *new_figure = initRandomFigure(game->currentPlayer->game_field);
-            memcpy(game->currentFigure, new_figure, sizeof(Figure));
-            free(new_figure);
-            
             if (willCollide(game->currentFigure, 0, 1, game->currentPlayer->game_field)){
                 _continue=0;
+            } else {
+                Figure *new_figure = initRandomFigure(game->currentPlayer->game_field);
+                memcpy(game->currentFigure, game->nextFigure, sizeof(Figure));
+                memcpy(game->nextFigure, new_figure, sizeof(Figure));
+                free(new_figure);
             }
             success = 1;
         }
         
-        parlcd_delay(0.16);
+        parlcd_delay(20);
     }
 
     game->currentPlayer->status = GAME_END;

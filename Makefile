@@ -109,7 +109,7 @@ connect:
 copy-executable:
 	ssh $(SSH_OPTIONS) -t $(TARGET_USER)@$(TARGET_IP) killall gdbserver 1>/dev/null 2>/dev/null || true
 	ssh $(SSH_OPTIONS) $(TARGET_USER)@$(TARGET_IP) mkdir -p $(TARGET_DIR)
-	scp $(SSH_OPTIONS) $(BIN_PATH)/$(BIN_NAME) index.bmp $(TARGET_USER)@$(TARGET_IP):$(TARGET_DIR)/
+	scp $(SSH_OPTIONS) $(BIN_PATH)/$(BIN_NAME) logo.ppm $(TARGET_USER)@$(TARGET_IP):$(TARGET_DIR)/
 .PHONY: copy-executable
 
 run: copy-executable $(BIN_PATH)/$(BIN_NAME)

@@ -15,10 +15,11 @@
 #include <pthread.h>
 
 #define TARGET_PORT 3333
-char * opponent;
+char *opponent;
 
 void server(){
-    
+
+    printf("\n------\n------\n  ||\n  ||\n  ||\n  --\nGame was initalized\n");
     int nBytes;
     struct sockaddr_in serverAddr, clientAddr;
     socklen_t serverAddrSize, clientAddrSize;
@@ -149,3 +150,4 @@ int main(){
     pthread_join(server_thread, NULL);
     pthread_join(game_thread, NULL);
 }
+

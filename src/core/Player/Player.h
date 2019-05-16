@@ -21,10 +21,9 @@ enum PlayerMode
 } PlayerMode;
 
 typedef struct Player {
-    char *username;
     int score;
     struct Cell **game_field;
-    char ip[256];
+    char ip[16];
     enum GameStatus status;
     enum PlayerMode mode;
     int level;
