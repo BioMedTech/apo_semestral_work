@@ -21,8 +21,8 @@ unsigned char *initDisplay(){
     return parlcd_mem_base;
 }
 
-
-void redraw(unsigned char *parlcd_mem_base, Cell **playerField){
+void redraw(unsigned char *parlcd_mem_base, Cell **playerField, Cell **opponentField)
+{
     parlcd_write_cmd(parlcd_mem_base, 0x2c);
     
     int n, m;
@@ -34,8 +34,16 @@ void redraw(unsigned char *parlcd_mem_base, Cell **playerField){
                 m = j / CELL_SIZE;
                 color = playerField[n][m].state == 0 ? 0x0000 : playerField[n][m].color;
                 parlcd_write_data(parlcd_mem_base, color);
+            } 
+            else if (opponentField && j < 30 * CELL_SIZE)
+            {
+                n = i / CELL_SIZE;
+                m = j / CELL_SIZE;
+                color = opponentField[n][m].state == 0 ? 0x0000 : opponentField[n][m].color;
+                parlcd_write_data(parlcd_mem_base, color);
+
             } else {
-                parlcd_write_data(parlcd_mem_base, 0xFFFF);
+                parlcd_write_data(parlcd_mem_base, 0x0);
             }
         }
     }
@@ -108,9 +116,21 @@ void fillBgImg(char *filename)
 
     fclose(file);
 
-    for (int i=0; i < rows && i < HEIGHT; i++){
-        for (int j = 0; j < cols && j < WIDTH; j++){
-            data[HEIGHT * i + j] = ((img[(cols * i + j) * 3] & 0xf8) << 8) | (((img[(cols * i + j)*3 + 1] & 0xfc) << 3) | (img[(cols * i + j)*3 + 2] >> 3);
+    for (int i=0; i < rows; i++){
+        for (int j = 0; j < cols; j++){
+            // unsigned r = img[(cols * i + j) * 3] & 0xF800) << 11;
+            // unsigned g =img[(cols * i + j) * 3+1] & 0x07E0) << 5;
+            // unsigned b = img[(cols * i + j) * 3+2] & 0x001F;
+
+            // r = (r * 255) / 31;
+            // g = (g * 255) / 63;
+            // b = (b * 255) / 31;
+
+            uint16_t color2 = (img[(cols * i + j) * 3] << 11) | (img[(cols * i + j) * 3+1] << 5) | img[(cols * i + j) * 3+2];
+            uint16_t color1 = ((img[(cols * i + j) * 3] >> 3) << 11) | ((img[(cols * i + j) * 3 + 1] >> 2) << 5) | (img[(cols * i + j) * 3 + 2] >> 3);
+            uint16_t color = ((img[(cols * i + j) * 3] * 31 & 0xf8) << 8) | ((img[(cols * i + j) * 3 + 1]*63 & 0xfc) << 3) | (img[(cols * i + j) * 3 + 2]*31 >> 3);
+            data[WIDTH * i + j] = color1;
+            // if (color!=color1)printf("Not the same" );
         }
     }
     free(img);

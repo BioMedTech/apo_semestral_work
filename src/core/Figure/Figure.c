@@ -50,15 +50,19 @@ static int figures[] = {
     -1, 0, 0, 0, 1, 0, 2, 0
     };
 
-Figure *initRandomFigure(Cell **gameField)
+Figure *initRandomFigure()
 {
     Figure *figure = (Figure *)calloc(1, sizeof(Figure));
     figure->type = random() % FIGURE_TYPES_QUANTITY;
     figure->offset.x = 5;
     figure->offset.y = 1;
-
     figure->color = colors[random() % 5];
 
+    return figure;
+}
+
+void addFigureToField(Figure *figure, Cell **gameField)
+{ 
     for (int i = figure->type * 8, n = 0; i < (figure->type + 1) * 8; i += 2, n++)
     {
         figure->state[n].x = figures[i];
@@ -67,9 +71,8 @@ Figure *initRandomFigure(Cell **gameField)
         gameField[figures[i + 1] + figure->offset.y][figures[i] + figure->offset.x].color = figure->color;
         gameField[figures[i + 1] + figure->offset.y][figures[i] + figure->offset.x].state = 2;
     }
-
-    return figure;
 }
+
 
 int moveFigure(int vector_x, int vector_y, Figure *figure, Player *player)
 {

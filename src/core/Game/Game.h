@@ -21,11 +21,18 @@
 #define GREEEN 0x07E0
 #define BLUE 0x001F
 
+enum GameMode
+{
+    ONE_PLAYER,
+    TWO_PLAYERS
+} GameMode;
+
 typedef struct Game {
     struct Player *currentPlayer;
     struct Player *opponent;
     struct Figure *currentFigure;
     struct Figure *nextFigure;
+    enum GameMode mode;
 } Game;
 
 Game *initGame();

@@ -30,8 +30,9 @@ typedef struct Figure {
 } Figure;
 
 int checkFullRow(int row, Cell **gameField);
-Figure *initRandomFigure(Cell **gameField);
+Figure *initRandomFigure();
 int removeRow(int row, Cell **gameField);
+void addFigureToField(Figure *figure, Cell **gameField);
 int moveFigure(int vector_x, int vector_y, Figure *figure, Player *player);
 void rotateFigure(Figure *figure, int clock, Cell **gameField);
 int willCollide(Figure *figure, int vector_x, int vector_y, Cell **gameField);

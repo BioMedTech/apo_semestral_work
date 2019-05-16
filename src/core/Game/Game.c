@@ -8,10 +8,8 @@ unsigned char *mem;
 Game *initGame()
 {
     mem = initDisplay();
-    Game *newGame = (Game *)calloc(1, sizeof(Game));
+    Game *newGame = (Game *) calloc (1, sizeof(Game));
     newGame->currentPlayer = initPlayer();
-    newGame->currentFigure = initRandomFigure(newGame->currentPlayer->game_field);
-    newGame->nextFigure = initRandomFigure(newGame->currentPlayer->game_field);
 
     return newGame;
 }
@@ -31,7 +29,7 @@ void printMenu(Game *game){
 
     clearData();
     fillBgImg("/tmp/mozguana/logo.ppm");
-    drawString("TETRIS", 3, 8, RED, 0x0);
+    drawString("TETRIS", 8, 28, RED, 0x0);
     redrawData(mem);
 
     while(_continue){
@@ -51,17 +49,17 @@ void printMenu(Game *game){
             is_pressing = 0;
         }
         
-        drawString("ONE PLAYER", 5, 6, RED, color_one_player);
-        drawString("TWO PLAYERS", 7, 6, RED, color_two_players);
+        drawString("ONE PLAYER", 12, 26, RED, color_one_player);
+        drawString("TWO PLAYERS", 14, 26, RED, color_two_players);
 
 
         if (state.rb == 1) {
-           game->currentPlayer->mode = one_player_chosen ? ONE_PLAYER : TWO_PLAYERS;
+           game->mode = one_player_chosen ? ONE_PLAYER : TWO_PLAYERS;
            _continue = 0;
         }
 
         redrawData(mem);
-        parlcd_delay(0.0002);
+        parlcd_delay(20);
     }
     
     clearData();
@@ -107,7 +105,7 @@ void printMenu(Game *game){
         drawString("HARD", 7, 8, 0xFFFF, colors[2]);
 
         redrawData(mem);
-        parlcd_delay(0.0002);
+        parlcd_delay(20);
 
         if (!unlock && !state.rb) unlock = 1;
 
@@ -132,24 +130,24 @@ void playGame(Game *game)
 {
     sleep(1);
     clock_t before = clock();
+   
     Knobs_state state = getKnobsValue();
     Knobs_state new_state = getKnobsValue();
+    
     int success = 1;
-    int period = 800;
+    int _continue = 1;
+    int period = !game->currentPlayer->level ? 400 : (game->currentPlayer->level == 1 ? 300 : 200);
 
-    switch (game->currentPlayer->level){
-        case 0:
-          break;
-        case 1:
-          period = 650;
-          break;
-        default:
-          period = 500;
-          
+    if (game->mode == TWO_PLAYERS){
+        while (game->currentPlayer->status != GAME_IN_PROGRESS){
+           sleep(2);
+        };
     }
 
-    game->currentPlayer->status = GAME_IN_PROGRESS;
-    int _continue=1;
+    game->currentFigure = initRandomFigure();
+    game->nextFigure = initRandomFigure();
+
+    addFigureToField(game->currentFigure, game->currentPlayer->game_field);
 
     while (_continue)
     {
@@ -183,22 +181,31 @@ void playGame(Game *game)
 
         new_state = getKnobsValue();
         // pthread_mutex_lock(display_mutex);
-        redraw(mem, game->currentPlayer->game_field);
+        redraw(mem, game->currentPlayer->game_field, game->mode==TWO_PLAYERS? game->opponent->game_field: NULL);
       
         if (!success)
         {
-            if (willCollide(game->currentFigure, 0, 1, game->currentPlayer->game_field)){
-                _continue=0;
-            } else {
-                Figure *new_figure = initRandomFigure(game->currentPlayer->game_field);
-                memcpy(game->currentFigure, game->nextFigure, sizeof(Figure));
-                memcpy(game->nextFigure, new_figure, sizeof(Figure));
-                free(new_figure);
-            }
+            Figure *new_figure = initRandomFigure(game->currentPlayer->game_field);
+                
+            memcpy(game->currentFigure, game->nextFigure, sizeof(Figure));
+            memcpy(game->nextFigure, new_figure, sizeof(Figure));
+            
+            addFigureToField(game->currentFigure, game->currentPlayer->game_field);
+            free(new_figure);
             success = 1;
+
+            if (game->currentPlayer->score >= 1000 && !(game->currentPlayer->score % 1000))
+            {
+                period-=10;
+            }
+
+            if (willCollide(game->currentFigure, 0, 1, game->currentPlayer->game_field))
+            {
+                _continue = 0;
+            }
         }
         
-        parlcd_delay(20);
+        parlcd_delay(16);
     }
 
     game->currentPlayer->status = GAME_END;

@@ -49,12 +49,12 @@ void *lightThread(){
 
 void initTreads(Game *game) {
     pthread_create(&game_thread, NULL, gameThread, game);
-    pthread_create(&server_thread, NULL, runServer, game);
+    pthread_create(&light_thread, NULL, lightThread, NULL);
 }
 
 void initServerThreads(Game *game){
     pthread_create(&client_thread, NULL, runClient, game);
-    pthread_create(&light_thread, NULL, lightThread, NULL);
+    pthread_create(&server_thread, NULL, runServer, game);
 }
 
 void initMutex(){
@@ -75,16 +75,16 @@ void joinServerThreads(){
 int main(int argc, char *argv[]) {
     Game *game = initGame();
     printMenu(game);
-    printf("\n------\n------\n------\n   ||\n   ||\n   ||\n    -\nGame was initalized\n");
 
     initMutex();
  
     if (game->currentPlayer->mode == TWO_PLAYERS){
+        game->opponent = initPlayer();
         initServerThreads(game);
-        joinServerThreads();
     }
 
     initTreads(game);
+    joinServerThreads();
     joinThreads();
    
     return 0;
