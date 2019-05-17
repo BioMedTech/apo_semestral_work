@@ -24,11 +24,11 @@ void redraw(unsigned char *parlcd_mem_base, Cell *playerField, Cell *opponentFie
 
     for (int i = 0; i < HEIGHT; i++){
         for (int j = 0; j < WIDTH; j++){
-            if (j < GAME_FIELD_WIDTH * CELL_SIZE)
+            if (j < GAME_FIELD_WIDTH * CELL_SIZE && playerField)
             {
                 parlcd_write_data(parlcd_mem_base, getCell(playerField, i / CELL_SIZE, j / CELL_SIZE)->color);
             }
-            else if (j == GAME_FIELD_WIDTH * CELL_SIZE){
+            else if (j == GAME_FIELD_WIDTH * CELL_SIZE && playerField){
                 parlcd_write_data(parlcd_mem_base, 0xFFFF);
             }
             else if (opponentField && j >= GAME_FIELD_WIDTH * 2 * CELL_SIZE)

@@ -10,8 +10,59 @@ Game *initGame()
     mem = initDisplay();
     Game *newGame = (Game *) calloc (1, sizeof(Game));
     newGame->currentPlayer = initPlayer();
+    
 
     return newGame;
+}
+
+void printPersonRating(FILE *file, PersonRating rating, int place, char buffer[200], uint16_t col){
+    snprintf(buffer, 200 * sizeof(char), "%d. DATE: %s, IP: %s, SCORE: %d", place, rating.time, rating.ip, rating.score );
+    drawString(buffer, 3+place, 4, col, 0x0, 1);
+    fwrite(&rating, sizeof(PersonRating), 1, file);
+}
+
+
+void showRatingTable(Player *currentPlayer){
+    int lines = 0; 
+    FILE *file = fopen("rating.txt", "w+");
+    fscanf(file,"%d", &lines);
+    PersonRating *rating =(PersonRating *)calloc(lines, sizeof(PersonRating));
+    
+    int myPlace = lines + 1;
+    
+    if (lines > 0) {
+        for (int i=0; i<lines; i++) {
+            
+            fread(&rating[i], sizeof(PersonRating), 1, file);
+            
+            if (rating[i].score > currentPlayer->score){
+               myPlace = i + 1;
+            }
+        }
+    }
+
+    PersonRating me;
+    
+    time_t now;
+    struct tm *tme = localtime(time(&now));
+
+    char buffer[200];
+    snprintf(me.time, 12 * sizeof(char), "%.2d.%.2d.%d\0", tme->tm_mday, tme->tm_mon + 1, tme->tm_year + 1900);
+    me.score = currentPlayer->score;
+    strncpy(me.ip, currentPlayer->ip, 15);
+
+    fprintf(file,"%d", lines);
+    
+    for (int i=0; i < lines+1; i++){
+        if (i == myPlace){
+           printPersonRating(file, me, i, buffer, RED);
+        }else{
+            printPersonRating(file, rating[i], i, buffer, 0x0);
+        }
+    }
+
+    free(rating);
+    fclose(file);
 }
 
 
@@ -229,19 +280,51 @@ void playGame(Game *game)
             }
             
         }
+
+        if (game->mode == TWO_PLAYERS && !game->opponent->game_field){
+            char buffer[100];
+            snprintf(buffer, sizeof buffer, "SCORE IS %d", game->opponent->score);
+            
+            drawString("END OF THE GAME!", 5, 40, 0xFFFF, 0x0, 1);
+            drawString("YOUR OPPONENT'S ", 8, 40, 0xFFFF, 0x0, 1);
+            drawString(buffer, 9, 43, 0xFFFF, 0x0, 1);
+        }
         
         parlcd_delay(16);
     }
 
     game->currentPlayer->status = GAME_END;
 
-    snprintf(buffer, sizeof buffer, "YOUR SCORE IS %d\0", game->currentPlayer->score);
-    printf("SCORE: %d\n", game->currentPlayer->score);
+    snprintf(buffer, sizeof buffer, "YOUR SCORE IS %d", game->currentPlayer->score);
 
     clearData();
     drawString("END OF THE GAME!", 7, 8, 0xFFFF, 0x0, 1);
     drawString(buffer, 10, 8, 0xFFFF, 0x0, 1);
+    redrawData(mem);
+    
+    if (game->mode == TWO_PLAYERS){
+        while(game->opponent->game_field){
+            sleep(1);
+            redraw(mem, NULL, game->opponent->game_field);
+        }
+        clearData();
+        sleep(1);
+        
+        drawString(buffer, 8, 15, 0xFFFF, 0x0, 1);
+        snprintf(buffer, sizeof buffer, "YOUR OPPONENT'S SCORE IS %d", game->opponent->score);
+        drawString(buffer, 10, 14, 0xFFFF, 0x0, 1);
 
+        if (game->opponent->score > game->currentPlayer->score){
+            drawString("YOU LOSE!", 6, 8, 0xFFFF, 0x0, 2);
+        } else if (game->opponent->score < game->currentPlayer->score){
+            drawString("YOU WON!", 6, 8, 0xFFFF, 0x0, 2);
+        } else{
+            drawString("DRAW!", 6, 8, 0xFFFF, 0x0, 2);
+        }
+        redrawData(mem);
+    }
+
+    showRatingTable(game->currentPlayer);
     redrawData(mem);
 
     return NULL;

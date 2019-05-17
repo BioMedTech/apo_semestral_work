@@ -78,14 +78,7 @@ void runServer(Game *game) {
     
     free(game->opponent->game_field);
     game->opponent->game_field = NULL;
-    printf("Opponent loose\n");
-    char buffer[100];
-    snprintf(buffer, sizeof buffer, "SCORE IS %d\0", game->currentPlayer->score);
     
-    drawString("END OF THE GAME!", 7, 15, 0xFFFF, 0x0, 1);
-    drawString("YOUR OPPONENT'S ", 10, 15, 0xFFFF, 0x0, 1);
-    drawString(buffer, 11, 15, 0xFFFF, 0x0, 1);
-
     free(package);
 
     return NULL;
@@ -144,8 +137,11 @@ void runClient(Game *game) {
         sleep(1);
 
     } while (game->currentPlayer->status != GAME_END);
-
+    
+    package->status = game->currentPlayer->status;
+    sendto(_socketClient, package, sizeof(PlayerPackage), 0, (const struct sockaddr *)&broadcast, len);
     free(package);
+    
     printf("Ending update sender...\n");
     return NULL;
 }
