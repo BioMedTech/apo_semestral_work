@@ -17,12 +17,16 @@ enum GameStatus {
 
 typedef struct Player {
     int score;
-    struct Cell **game_field;
+    struct Cell *game_field;
     char ip[16];
     enum GameStatus status;
     int level;
 } Player;
 
 Player *initPlayer();
+void fillGameField(Cell *game_field, int row, int col, int color, int state);
+void copyRow(Cell *game_field, int src_row, int dest_row);
+Cell *getCell(Cell *game_field, int row, int col);
+ int getCellState(Cell *game_field, int row, int col);
 
 #endif //MZAPO_TEMPLATE_PLAYER_H

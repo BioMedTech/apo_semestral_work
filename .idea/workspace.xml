@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true">
+  <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true" buildAllGenerated="false">
     <generated />
   </component>
   <component name="CMakeSettings">
@@ -10,18 +10,40 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d5ff77ed-1aff-48ce-8cf3-2f24994dd755" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/Makefile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/change_me.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/font_prop14x16.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/font_rom8x16.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/font_types.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mzapo_parlcd.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mzapo_parlcd.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mzapo_phys.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mzapo_phys.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mzapo_regs.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
+      <change beforePath="$PROJECT_DIR$/.idea/mzapo_template.iml" afterPath="$PROJECT_DIR$/.idea/mzapo_template.iml" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change beforePath="$PROJECT_DIR$/Makefile" afterPath="$PROJECT_DIR$/Makefile" />
+      <change beforePath="$PROJECT_DIR$/build/bin/runner" afterPath="$PROJECT_DIR$/build/bin/runner" />
+      <change beforePath="$PROJECT_DIR$/build/core/Figure/Figure.d" afterPath="$PROJECT_DIR$/build/core/Figure/Figure.d" />
+      <change beforePath="$PROJECT_DIR$/build/core/Figure/Figure.o" afterPath="$PROJECT_DIR$/build/core/Figure/Figure.o" />
+      <change beforePath="$PROJECT_DIR$/build/core/Game/Game.d" afterPath="$PROJECT_DIR$/build/core/Game/Game.d" />
+      <change beforePath="$PROJECT_DIR$/build/core/Game/Game.o" afterPath="$PROJECT_DIR$/build/core/Game/Game.o" />
+      <change beforePath="$PROJECT_DIR$/build/core/Player/Player.o" afterPath="$PROJECT_DIR$/build/core/Player/Player.o" />
+      <change beforePath="$PROJECT_DIR$/build/core/Server/server.d" afterPath="$PROJECT_DIR$/build/core/Server/server.d" />
+      <change beforePath="$PROJECT_DIR$/build/core/Server/server.o" afterPath="$PROJECT_DIR$/build/core/Server/server.o" />
+      <change beforePath="$PROJECT_DIR$/build/core/lcd_logic/lcd_logic.d" afterPath="$PROJECT_DIR$/build/core/lcd_logic/lcd_logic.d" />
+      <change beforePath="$PROJECT_DIR$/build/core/lcd_logic/lcd_logic.o" afterPath="$PROJECT_DIR$/build/core/lcd_logic/lcd_logic.o" />
+      <change beforePath="$PROJECT_DIR$/build/main.d" afterPath="$PROJECT_DIR$/build/main.d" />
+      <change beforePath="$PROJECT_DIR$/build/main.o" afterPath="$PROJECT_DIR$/build/main.o" />
+      <change beforePath="$PROJECT_DIR$/connect.gdb" afterPath="$PROJECT_DIR$/connect.gdb" />
+      <change beforePath="$PROJECT_DIR$/debug.txt" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/logo.ppm" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/src/core/Figure/Figure.c" afterPath="$PROJECT_DIR$/src/core/Figure/Figure.c" />
+      <change beforePath="$PROJECT_DIR$/src/core/Figure/Figure.h" afterPath="$PROJECT_DIR$/src/core/Figure/Figure.h" />
+      <change beforePath="$PROJECT_DIR$/src/core/Game/Game.c" afterPath="$PROJECT_DIR$/src/core/Game/Game.c" />
+      <change beforePath="$PROJECT_DIR$/src/core/Player/Player.c" afterPath="$PROJECT_DIR$/src/core/Player/Player.c" />
+      <change beforePath="$PROJECT_DIR$/src/core/Player/Player.h" afterPath="$PROJECT_DIR$/src/core/Player/Player.h" />
+      <change beforePath="$PROJECT_DIR$/src/core/Server/server.c" afterPath="$PROJECT_DIR$/src/core/Server/server.c" />
+      <change beforePath="$PROJECT_DIR$/src/core/Server/server.h" afterPath="$PROJECT_DIR$/src/core/Server/server.h" />
+      <change beforePath="$PROJECT_DIR$/src/core/lcd_logic/Cell.h" afterPath="$PROJECT_DIR$/src/core/lcd_logic/Cell.h" />
+      <change beforePath="$PROJECT_DIR$/src/core/lcd_logic/lcd_logic.c" afterPath="$PROJECT_DIR$/src/core/lcd_logic/lcd_logic.c" />
+      <change beforePath="$PROJECT_DIR$/src/core/lcd_logic/lcd_logic.h" afterPath="$PROJECT_DIR$/src/core/lcd_logic/lcd_logic.h" />
+      <change beforePath="$PROJECT_DIR$/src/main.c" afterPath="$PROJECT_DIR$/src/main.c" />
     </list>
+    <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -31,7 +53,22 @@
     <option name="formatViaClangd" value="false" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300" />
+    <leaf>
+      <file leaf-file-name="logo.ppm" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/logo.ppm">
+          <provider selected="true" editor-type-id="images">
+            <state />
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="index(1).ppm" pinned="false" current-in-tab="true">
+        <entry file="file://$USER_HOME$/Downloads/index(1).ppm">
+          <provider selected="true" editor-type-id="images">
+            <state />
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -50,8 +87,15 @@
         <option value="$PROJECT_DIR$/main.c" />
         <option value="$PROJECT_DIR$/core/Grid/Grid.h" />
         <option value="$PROJECT_DIR$/core/Grid/Grid.c" />
+        <option value="$PROJECT_DIR$/logo.txt" />
       </list>
     </option>
+  </component>
+  <component name="JsBuildToolGruntFileManager" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsBuildToolPackageJson" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsGulpfileManager">
+    <detection-done>true</detection-done>
+    <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectConfigurationFiles">
     <option name="files">
@@ -70,7 +114,17 @@
     <option name="height" value="994" />
   </component>
   <component name="ProjectView">
-    <navigator proportions="" version="1">
+    <navigator currentView="ProjectPane" proportions="" version="1">
+      <flattenPackages />
+      <showMembers />
+      <showModules />
+      <showLibraryContents />
+      <hideEmptyPackages />
+      <abbreviatePackageNames />
+      <autoscrollToSource />
+      <autoscrollFromSource />
+      <sortByType />
+      <manualOrder />
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
@@ -78,14 +132,13 @@
         <subPane>
           <expand>
             <path>
-              <item name="mzapo_template" type="b2602c69:ProjectViewProjectNode" />
-              <item name="mzapo_template" type="462c0819:PsiDirectoryNode" />
+              <item name="apo_semestral_work" type="dad4c3:CidrFilesViewHelper$MyProjectTreeStructure$1" />
+              <item name="apo_semestral_work" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -95,6 +148,9 @@
     <property name="settings.editor.selected.configurable" value="editor.preferences.completion" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/core/Figure" />
       <recent name="$PROJECT_DIR$/core/Config" />
@@ -112,6 +168,9 @@
       </list>
     </option>
   </component>
+  <component name="ShelveChangesManager" show_recycled="false">
+    <option name="remove_strategy" value="false" />
+  </component>
   <component name="SvnConfiguration">
     <configuration />
   </component>
@@ -124,169 +183,81 @@
       <updated>1556972196066</updated>
       <workItem from="1556972200054" duration="4600000" />
       <workItem from="1556976839839" duration="7575000" />
+      <workItem from="1558098053580" duration="310000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="12175000" />
+    <option name="totallyTimeSpent" value="12485000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="-1" width="1920" height="1034" extended-state="6" />
+    <frame x="-3" y="31" width="1926" height="1123" extended-state="6" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.18249734" />
-      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info id="Favorites" order="2" side_tool="true" />
-      <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
-      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
-      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="Database Changes" order="7" />
-      <window_info anchor="bottom" id="Version Control" order="8" />
-      <window_info anchor="bottom" id="Terminal" order="9" />
-      <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
-      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
-      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
-      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="right" id="Database" order="3" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.18229167" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="CMake" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3297244" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="true" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Database Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
   </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager />
+    <watches-manager />
+  </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/mzapo_phys.h">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/mzapo_phys.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="307">
-          <caret line="27" column="54" lean-forward="true" selection-start-line="27" selection-start-column="54" selection-end-line="27" selection-end-column="54" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/font_prop14x16.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="15">
-          <caret line="1" selection-start-line="1" selection-end-line="1" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/mzapo_phys.c" />
+    <entry file="file://$PROJECT_DIR$/font_prop14x16.c" />
     <entry file="file://$PROJECT_DIR$/core.h" />
     <entry file="file://$PROJECT_DIR$/core.c" />
-    <entry file="file://$PROJECT_DIR$/font_rom8x16.c">
+    <entry file="file://$PROJECT_DIR$/font_rom8x16.c" />
+    <entry file="file://$PROJECT_DIR$/core/Game/Game.c" />
+    <entry file="file://$PROJECT_DIR$/core/Game/Game.h" />
+    <entry file="file://$PROJECT_DIR$/core/Figure/Figure.h" />
+    <entry file="file://$PROJECT_DIR$/figures.c" />
+    <entry file="file://$PROJECT_DIR$/font_types.h" />
+    <entry file="file://$PROJECT_DIR$/mzapo_parlcd.c" />
+    <entry file="file://$PROJECT_DIR$/core/Grid/Grid.h" />
+    <entry file="file://$PROJECT_DIR$/core/Grid/Grid.c" />
+    <entry file="file://$PROJECT_DIR$/core/Config/Config.h" />
+    <entry file="file://$PROJECT_DIR$/mzapo_regs.h" />
+    <entry file="file://$PROJECT_DIR$/main.c" />
+    <entry file="file://$PROJECT_DIR$/mzapo_parlcd.h" />
+    <entry file="file://$PROJECT_DIR$/logo.ppm">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="142260">
-          <caret line="9484" column="14" selection-start-line="9484" selection-start-column="14" selection-end-line="9484" selection-end-column="14" />
+        <state relative-caret-position="0">
+          <caret line="0" column="2" lean-forward="false" selection-start-line="0" selection-start-column="2" selection-end-line="0" selection-end-column="2" />
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/core/Game/Game.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="7" selection-start-line="7" selection-end-line="7" />
-        </state>
+    <entry file="file://$PROJECT_DIR$/logo.ppm">
+      <provider selected="true" editor-type-id="images">
+        <state />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/core/Game/Game.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="12" selection-start-line="12" selection-end-line="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/core/Level/Level.h">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/core/Level/Level.c">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/core/Figure/Figure.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="240">
-          <caret line="16" column="18" selection-start-line="16" selection-start-column="18" selection-end-line="16" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/core/Figure/Figure.c">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/figures.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="330">
-          <caret line="22" column="13" selection-start-line="22" selection-start-column="13" selection-end-line="22" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/font_types.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="7" column="31" selection-start-line="7" selection-end-line="8" />
-          <folding>
-            <element signature="e#674#686#0" expanded="true" />
-            <element signature="e#1786#1803#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/mzapo_parlcd.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
-          <caret line="29" column="51" selection-start-line="29" selection-start-column="51" selection-end-line="29" selection-end-column="51" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/core/Grid/Grid.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="435">
-          <caret line="29" column="18" selection-start-line="29" selection-start-column="18" selection-end-line="29" selection-end-column="18" />
-          <folding>
-            <element signature="e#180#212#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/core/Grid/Grid.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="210">
-          <caret line="14" column="33" selection-start-line="14" selection-start-column="33" selection-end-line="14" selection-end-column="33" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/core/Config/Config.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="17" selection-start-line="17" selection-end-line="17" />
-          <folding>
-            <element signature="e#65#93#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/core/Config/Config.c">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/mzapo_regs.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="720">
-          <caret line="48" column="8" selection-start-line="48" selection-start-column="8" selection-end-line="48" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/main.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1207">
-          <caret line="93" column="28" selection-start-line="93" selection-start-column="28" selection-end-line="93" selection-end-column="28" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/mzapo_parlcd.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="225">
-          <caret line="15" column="16" lean-forward="true" selection-start-line="15" selection-start-column="16" selection-end-line="15" selection-end-column="16" />
-        </state>
+    <entry file="file://$USER_HOME$/Downloads/index(1).ppm">
+      <provider selected="true" editor-type-id="images">
+        <state />
       </provider>
     </entry>
   </component>

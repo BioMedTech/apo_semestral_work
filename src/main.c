@@ -31,7 +31,7 @@
 #include "core/Server/server.h"
 
 pthread_t game_thread, client_thread, server_thread, light_thread;
-pthread_mutex_t display_mutex, light_mutex;
+
 
 unsigned char *mem;
 
@@ -40,26 +40,25 @@ void *gameThread(void *vargp) {
     playGame(game);
 }
 
-void *lightThread(){
+void *lightThread(void *vargp){
+    Game *game = (Game *)vargp;
     while(1){
-        // Check if the value of light was changed
-        sleep(3);
+        // if (game->ledColor){
+        //     setLedValues(game->ledColor);
+        //     sleep(1);
+        // }
+        sleep(0.2);
     }
 }
 
 void initTreads(Game *game) {
     pthread_create(&game_thread, NULL, gameThread, game);
-    pthread_create(&light_thread, NULL, lightThread, NULL);
+    pthread_create(&light_thread, NULL, lightThread, game);
 }
 
 void initServerThreads(Game *game){
     pthread_create(&client_thread, NULL, runClient, game);
     pthread_create(&server_thread, NULL, runServer, game);
-}
-
-void initMutex(){
-    pthread_mutex_init(&display_mutex, NULL);
-    pthread_mutex_init(&light_mutex, NULL);
 }
 
 void joinThreads(){
@@ -75,10 +74,8 @@ void joinServerThreads(){
 int main(int argc, char *argv[]) {
     Game *game = initGame();
     printMenu(game);
-
-    initMutex();
  
-    if (game->currentPlayer->mode == TWO_PLAYERS){
+    if (game->mode == TWO_PLAYERS){
         game->opponent = initPlayer();
         initServerThreads(game);
     }

@@ -58,18 +58,22 @@ Figure *initRandomFigure()
     figure->offset.y = 1;
     figure->color = colors[random() % 5];
 
+
     return figure;
 }
 
-void addFigureToField(Figure *figure, Cell **gameField)
+void addFigureToField(Figure *figure, Cell *gameField, int next)
 { 
     for (int i = figure->type * 8, n = 0; i < (figure->type + 1) * 8; i += 2, n++)
     {
         figure->state[n].x = figures[i];
         figure->state[n].y = figures[i + 1];
-        
-        gameField[figures[i + 1] + figure->offset.y][figures[i] + figure->offset.x].color = figure->color;
-        gameField[figures[i + 1] + figure->offset.y][figures[i] + figure->offset.x].state = 2;
+
+        if (next){
+            fillCell(figures[i + 1] + 10, figures[i] + 14, figure->color);
+        } else {
+            fillGameField(gameField, figures[i + 1] + figure->offset.y, figures[i] + figure->offset.x, figure->color, 2);
+        }
     }
 }
 
@@ -81,7 +85,7 @@ int moveFigure(int vector_x, int vector_y, Figure *figure, Player *player)
     int success = 1;
     int x, y;
 
-    Cell **gameField=player->game_field;
+    Cell *gameField = player->game_field;
 
     int collision = willCollide(figure, vector_x, vector_y, gameField);
 
@@ -92,10 +96,7 @@ int moveFigure(int vector_x, int vector_y, Figure *figure, Player *player)
             x = figure->offset.x + figure->state[i].x;
             y = figure->offset.y + figure->state[i].y;
 
-            // if (gameField[y][x].state == 2){
-                gameField[y][x].state = 0;
-            // }
-        
+            fillGameField(gameField, y, x, 0x0, 0);
         }
 
         figure->offset.x += vector_x;
@@ -106,11 +107,7 @@ int moveFigure(int vector_x, int vector_y, Figure *figure, Player *player)
             x = figure->offset.x + figure->state[i].x;
             y = figure->offset.y + figure->state[i].y;
 
-            // if (gameField[y][x].state == 0)
-            // {
-                gameField[y][x].state = 2;
-                gameField[y][x].color = figure->color;
-            // }
+            fillGameField(gameField, y, x, figure->color, 2);
         }
     } else if (collision == 1 && vector_y){
         success = 0;
@@ -120,7 +117,7 @@ int moveFigure(int vector_x, int vector_y, Figure *figure, Player *player)
     return success;
 }
 
-void rotateFigure(Figure *figure, int clock, Cell **gameField)
+void rotateFigure(Figure *figure, int clock, Cell *gameField)
 {
     //rotation matrix 90 degrees
     //(cos 90 -sin 90)=(0 -1)(x)=(-y)
@@ -148,14 +145,14 @@ void rotateFigure(Figure *figure, int clock, Cell **gameField)
             x = testCoords[i].x + figure->offset.x;
             y = testCoords[i].y + figure->offset.y;
 
-        if (y >= GAME_FIELD_HEIGHT || y<0 || x < 0 || x >= GAME_FIELD_WIDTH || gameField[y][x].state == 1)
-             collision = 1;
+            if (y >= GAME_FIELD_HEIGHT || y < 0 || x < 0 || x >= GAME_FIELD_WIDTH || getCellState(gameField, y, x) == 1)
+                collision = 1;
         }
 
         if (!collision){
             for (int i = 0; i < FIGURE_CELL_QUANTITY; i++)
             {
-                gameField[figure->state[i].y + figure->offset.y][figure->state[i].x + figure->offset.x].state = 0;   
+                fillGameField(gameField, figure->state[i].y + figure->offset.y, figure->state[i].x + figure->offset.x, 0x0, 0);
             }
 
             memcpy(figure->state, testCoords, sizeof(Coords) * 4);
@@ -165,30 +162,31 @@ void rotateFigure(Figure *figure, int clock, Cell **gameField)
                 x = figure->state[i].x + figure->offset.x;
                 y = figure->state[i].y + figure->offset.y;
                 
-                gameField[y][x].state = 2;
-                gameField[y][x].color = figure->color;
+                fillGameField(gameField, y, x, figure->color, 2);
             }   
         }
         
     }
 }
 
-int checkFullRow(int row, Cell **gameField){
+
+int checkFullRow(int row, Cell *gameField){
     for (int i = 0; i < GAME_FIELD_WIDTH; i++){
-        if (!gameField[row][i].state){
+        if (!getCellState(gameField, row, i))
+        {
             return 0;
         }
     }
     return 1;
 }
 
-int removeRow(int row, Cell **gameField){
+int removeRow(int row, Cell *gameField){
     int count=1;
     for (int i = row; i > 1; i--){
-        memcpy(gameField[i], gameField[i-1], sizeof(Cell) * GAME_FIELD_WIDTH);
+        copyRow(gameField, i-1, i);
     }
     for (int i=0; i < GAME_FIELD_WIDTH; i++){
-        gameField[0][i].state = 0;
+        getCell(gameField, 0, i)->state = 0;
     }
     if (checkFullRow(row, gameField))
     {
@@ -202,15 +200,14 @@ int removeRow(int row, Cell **gameField){
 void changePlayerField(Figure *figure, Player *player, int state)
 {
     int x, y;
-    Cell **gameField=player->game_field;
+    Cell *gameField=player->game_field;
     
     for (int i = 0; i < FIGURE_CELL_QUANTITY; i++)
     {
         x = figure->state[i].x + figure->offset.x;
         y = figure->state[i].y + figure->offset.y;
-       
-        gameField[y][x].state = state;
-        gameField[y][x].color = figure->color;
+
+        fillGameField(gameField, y, x, figure->color, state);
     }
     int count = 0;
 
@@ -225,12 +222,10 @@ void changePlayerField(Figure *figure, Player *player, int state)
     }
     if (count) {
         player->score += 600 * (player->level + 1)/(4-count);
-        setLedValues(0xFF0000);
-        setLedValues(0x0);
     }
 }
 
-int willCollide(Figure *figure, int vector_x, int vector_y, Cell **gameField)
+int willCollide(Figure *figure, int vector_x, int vector_y, Cell *gameField)
 {
     int collision = 0;
     int x, y;
@@ -239,7 +234,7 @@ int willCollide(Figure *figure, int vector_x, int vector_y, Cell **gameField)
         x = figure->state[i].x + figure->offset.x + vector_x;
         y = figure->state[i].y + figure->offset.y + vector_y;
 
-        if (x < 0 || x >= 15 || y >= 20 || gameField[y][x].state == 1)
+        if (x < 0 || x >=GAME_FIELD_WIDTH || y >= GAME_FIELD_HEIGHT || getCellState(gameField, y, x) == 1)
         {
             collision = 1;
         } 

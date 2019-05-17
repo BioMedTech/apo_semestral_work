@@ -29,13 +29,13 @@ typedef struct Figure {
    struct Coords state[4];
 } Figure;
 
-int checkFullRow(int row, Cell **gameField);
+int checkFullRow(int row, Cell *gameField);
 Figure *initRandomFigure();
-int removeRow(int row, Cell **gameField);
-void addFigureToField(Figure *figure, Cell **gameField);
+int removeRow(int row, Cell *gameField);
+void addFigureToField(Figure *figure, Cell *gameField, int next);
 int moveFigure(int vector_x, int vector_y, Figure *figure, Player *player);
-void rotateFigure(Figure *figure, int clock, Cell **gameField);
-int willCollide(Figure *figure, int vector_x, int vector_y, Cell **gameField);
+void rotateFigure(Figure *figure, int clock, Cell *gameField);
+int willCollide(Figure *figure, int vector_x, int vector_y, Cell *gameField);
 // void initRandomFigure()
 /*
 

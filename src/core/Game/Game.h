@@ -19,7 +19,8 @@
 
 #define RED 0xF800
 #define GREEEN 0x07E0
-#define BLUE 0x001F
+#define BLUE 0x1535
+#define ORANGE 0xF520
 
 enum GameMode
 {

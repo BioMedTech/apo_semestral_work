@@ -12,10 +12,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "../../mzapo_parlcd.h";
-#include "../../mzapo_regs.h";
-#include "../../font_types.h";
-#include "Cell.h"
+#include "../../mzapo_parlcd.h"
+#include "../../mzapo_regs.h"
+#include "../../font_types.h"
+#include "../Player/Player.h"
 
 
 
@@ -35,12 +35,12 @@
 
 unsigned char *initDisplay();
 void initData();
-void redraw(unsigned char *parlcd_mem_base, Cell **playerField, Cell **opponentField);
+void redraw(unsigned char *parlcd_mem_base, Cell *playerField, Cell *opponentField);
 void fillCell(int row, int col, uint16_t color);
-void drawLetter(char letter, int row, int column, uint16_t color, uint16_t bg);
+void drawLetter(char letter, int row, int column, uint16_t color, uint16_t bg, int scale);
 void redrawData(unsigned char *parlcd_mem_base);
 void fillBgImg(char *filename);
 void clearData();
-void drawString(char *str, int row, int column, int16_t color, uint16_t bg);
+void drawString(char *str, int row, int column, int16_t color, uint16_t bg, int scale);
 
 #endif //MZAPO_TEMPLATE_GRID_H

@@ -24,16 +24,15 @@ void printMenu(Game *game){
     int one_player_chosen = 1;
     int is_pressing = 0;
 
-    Knobs_state state = getKnobsValue();
+    Knobs_state state ;
     int _continue = 1;
 
     clearData();
     fillBgImg("/tmp/mozguana/logo.ppm");
-    drawString("TETRIS", 8, 28, RED, 0x0);
     redrawData(mem);
 
     while(_continue){
-        Knobs_state state = getKnobsValue();
+        state = getKnobsValue();
         
         if (state.gb == 1 && !is_pressing) {
             if (one_player_chosen){
@@ -49,8 +48,8 @@ void printMenu(Game *game){
             is_pressing = 0;
         }
         
-        drawString("ONE PLAYER", 12, 26, RED, color_one_player);
-        drawString("TWO PLAYERS", 14, 26, RED, color_two_players);
+        drawString("ONE PLAYER", 7, 2, 0xFFFF, color_one_player, 2);
+        drawString("TWO PLAYERS", 7, 15, 0xFFFF, color_two_players, 2);
 
 
         if (state.rb == 1) {
@@ -75,8 +74,9 @@ void printMenu(Game *game){
     _continue = 1;
     int unlock = 0;
 
-    drawString("TETRIS", 3, 8, RED, 0x0);
-    drawString("LEVEL", 4, 8, RED, 0x0);
+    
+    fillBgImg("/tmp/mozguana/logo.ppm");
+    drawString("LEVEL", 5, 12, ORANGE, 0x0, 2);
 
     while (_continue)
     {
@@ -99,10 +99,9 @@ void printMenu(Game *game){
             is_pressing = 0;
         }
 
-       
-        drawString("EASY", 5, 8, 0xFFFF, colors[0]);
-        drawString("MEDIUM", 6, 6, 0xFFFF, colors[1]);
-        drawString("HARD", 7, 8, 0xFFFF, colors[2]);
+        drawString("EASY", 7, 4, 0xFFFF, colors[0], 2);
+        drawString("MEDIUM", 7, 12, 0xFFFF, colors[1], 2);
+        drawString("HARD", 7, 22, 0xFFFF, colors[2], 2);
 
         redrawData(mem);
         parlcd_delay(20);
@@ -117,7 +116,11 @@ void printMenu(Game *game){
     }
 }
 
-
+void printScore(int score, char buffer[], int bufferSize){
+    snprintf(buffer, bufferSize, "SCORE: %d", score);
+    drawString(buffer, 3, 25, 0xFFFF, 0x0, 1);
+    drawString("Next:", 6, 26, 0xFFFF, 0x0, 1);    
+}
 
 // 1. Chose game mode
 // 2. If 2 players=>seach for another player in net, of no player=>cancel
@@ -136,39 +139,57 @@ void playGame(Game *game)
     
     int success = 1;
     int _continue = 1;
-    int period = !game->currentPlayer->level ? 400 : (game->currentPlayer->level == 1 ? 300 : 200);
+    char buffer[100];
+    int period = !game->currentPlayer->level ? 900 : (game->currentPlayer->level == 1 ? 700 : 550);
+    
 
     if (game->mode == TWO_PLAYERS){
+        clearData();
+        fillBgImg("/tmp/mozguana/logo.ppm");
+        drawString("WAITING FOR THE OPPONENT", 6, 4, 0xFFFF, 0x0, 2);
+        redrawData(mem);
+        int quantity=0;
+
         while (game->currentPlayer->status != GAME_IN_PROGRESS){
-           sleep(2);
+            drawString("      ", 7, 13, 0xFFFF, 0x0, 2);
+           for (int i=0; i<quantity; i++){
+             drawString(". ", 7, 13+i, 0xFFFF, 0x0, 2);
+           }
+           quantity=(quantity+1)%4;
+           redrawData(mem);
+           sleep(1);
         };
     }
-
+    clearData();
+    
     game->currentFigure = initRandomFigure();
     game->nextFigure = initRandomFigure();
 
-    addFigureToField(game->currentFigure, game->currentPlayer->game_field);
+    addFigureToField(game->currentFigure, game->currentPlayer->game_field, 0);
+    addFigureToField(game->nextFigure, game->currentPlayer->game_field, 1);
+    printScore(game->currentPlayer->score, buffer, sizeof buffer);
 
     while (_continue)
     {
-        if (new_state.gk - state.gk >= 3)
+        if (new_state.gk - state.gk >= 4)
         {
             moveFigure(1, 0, game->currentFigure, game->currentPlayer);
             state.gk = new_state.gk;
-        } else if (state.gk - new_state.gk >= 3)
+        } else if (state.gk - new_state.gk >= 4)
         {
             moveFigure(-1, 0, game->currentFigure, game->currentPlayer);
             state.gk = new_state.gk;  
         }
 
-        if (new_state.rk - state.rk >= 3 || state.rk - new_state.rk >= 3) {
-            rotateFigure(game->currentFigure, new_state.rk > state.rk, game->currentPlayer->game_field);
+        if (new_state.rk - state.rk >= 4 || state.rk - new_state.rk >= 4) {
+            rotateFigure(game->currentFigure, new_state.rk < state.rk, game->currentPlayer->game_field);
             state.rk = new_state.rk;  
         }
 
-        if (new_state.gb)
+        if (new_state.gb){
             success = moveFigure(0, 1, game->currentFigure, game->currentPlayer);
-        
+        }
+            
 
         clock_t diff = clock() - before;
         int mces = diff * 1000 / CLOCKS_PER_SEC;
@@ -180,20 +201,23 @@ void playGame(Game *game)
         } 
 
         new_state = getKnobsValue();
-        // pthread_mutex_lock(display_mutex);
-        redraw(mem, game->currentPlayer->game_field, game->mode==TWO_PLAYERS? game->opponent->game_field: NULL);
+        redraw(mem, game->currentPlayer->game_field, game->mode==TWO_PLAYERS ? game->opponent->game_field : NULL);
       
         if (!success)
         {
-            Figure *new_figure = initRandomFigure(game->currentPlayer->game_field);
+            clearData();
+            Figure *new_figure = initRandomFigure();
                 
             memcpy(game->currentFigure, game->nextFigure, sizeof(Figure));
             memcpy(game->nextFigure, new_figure, sizeof(Figure));
             
-            addFigureToField(game->currentFigure, game->currentPlayer->game_field);
+            addFigureToField(game->currentFigure, game->currentPlayer->game_field, 0);
+            addFigureToField(game->nextFigure, game->currentPlayer->game_field, 1);
+            
             free(new_figure);
             success = 1;
 
+            printScore(game->currentPlayer->score, buffer, sizeof buffer);
             if (game->currentPlayer->score >= 1000 && !(game->currentPlayer->score % 1000))
             {
                 period-=10;
@@ -203,6 +227,7 @@ void playGame(Game *game)
             {
                 _continue = 0;
             }
+            
         }
         
         parlcd_delay(16);
@@ -210,14 +235,13 @@ void playGame(Game *game)
 
     game->currentPlayer->status = GAME_END;
 
-    char buffer[200];
     snprintf(buffer, sizeof buffer, "YOUR SCORE IS %d\0", game->currentPlayer->score);
     printf("SCORE: %d\n", game->currentPlayer->score);
 
     clearData();
-    drawString("END OF THE GAME!", 7, 8, 0xFFFF, 0x0);
-    drawString(buffer, 10, 8, 0xFFFF, 0x0);
-    setLedValues(0xFF0000);
+    drawString("END OF THE GAME!", 7, 8, 0xFFFF, 0x0, 1);
+    drawString(buffer, 10, 8, 0xFFFF, 0x0, 1);
+
     redrawData(mem);
 
     return NULL;

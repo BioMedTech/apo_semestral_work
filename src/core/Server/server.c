@@ -1,6 +1,7 @@
 #include "server.h"
 int found_ip=0;
 
+
 void runServer(Game *game) {
     int _socket, nBytes;
     struct sockaddr_in serverAddr, clientAddr;
@@ -33,10 +34,11 @@ void runServer(Game *game) {
     clientAddrSize = sizeof clientAddr;
 
     int _continue = 1;
+    PlayerPackage *package=(PlayerPackage*) calloc (1, sizeof(PlayerPackage));
 
     printf("Server is listening on port %d\n", TARGET_PORT);
     while (_continue) {
-        if (nBytes = recvfrom(_socket, game->opponent, sizeof(Player), 0, (const struct sockaddr *) &clientAddr,
+        if (nBytes = recvfrom(_socket, package, sizeof(PlayerPackage), 0, (const struct sockaddr *) &clientAddr,
                               &clientAddrSize) == SO_ERROR) {
             perror("Socket error! ");
             getchar();
@@ -44,7 +46,7 @@ void runServer(Game *game) {
         }
 
         char *ip = inet_ntoa(clientAddr.sin_addr);
-        printf("Recieved from %s, %d\n", ip, strncmp(game->currentPlayer->ip, ip, 15));
+        // printf("Recieved from %s, %d\n", ip, strncmp(game->currentPlayer->ip, ip, 15));
 
         if (strncmp(game->currentPlayer->ip, ip, 15) != 0) {
             _continue = 0;
@@ -57,10 +59,9 @@ void runServer(Game *game) {
 
     int gameContinue = 1;
     game->currentPlayer->status == GAME_INIT;
-    Player *player=(Player*) calloc (1, sizeof(Player));
 
     while (gameContinue) {
-        if (nBytes = recvfrom(_socket, player, sizeof(Player), 0, &clientAddr,
+        if (nBytes = recvfrom(_socket, package, sizeof(PlayerPackage), 0, &clientAddr,
                               &clientAddrSize) == SO_ERROR) {
             fprintf(stderr, "Socket error!\n");
             getchar();
@@ -68,10 +69,24 @@ void runServer(Game *game) {
         }
         
         if (!strncmp(game->opponent->ip, inet_ntoa(clientAddr.sin_addr), 15)){
-            memcpy(game->opponent, player, sizeof(player));
+            memcpy(game->opponent->game_field, &package->game_field, GAME_FIELD_HEIGHT * GAME_FIELD_WIDTH * sizeof(Cell));
+            game->opponent->score=package->score;
+            game->opponent->status=package->status;
         }
         gameContinue = game->opponent->status != GAME_END;
     }
+    
+    free(game->opponent->game_field);
+    game->opponent->game_field = NULL;
+    printf("Opponent loose\n");
+    char buffer[100];
+    snprintf(buffer, sizeof buffer, "SCORE IS %d\0", game->currentPlayer->score);
+    
+    drawString("END OF THE GAME!", 7, 15, 0xFFFF, 0x0, 1);
+    drawString("YOUR OPPONENT'S ", 10, 15, 0xFFFF, 0x0, 1);
+    drawString(buffer, 11, 15, 0xFFFF, 0x0, 1);
+
+    free(package);
 
     return NULL;
 }
@@ -100,14 +115,15 @@ void runClient(Game *game) {
     char ipbuf[16];
     int a = 0;
 
+    PlayerPackage *package=calloc(1, sizeof(PlayerPackage));
+    
     do {
         snprintf(ipbuf, sizeof ipbuf, "192.168.202.%d", a);
         broadcast.sin_addr.s_addr = inet_addr(ipbuf);
         if (a == 203 || a == 210)
             printf("Sending to: %s\n", inet_ntoa(broadcast.sin_addr));
 
-        if (sendto(_socketClient, game->currentPlayer, sizeof(Player), 0, (const struct sockaddr *) &broadcast, len) <
-            0)
+        if (sendto(_socketClient, package, sizeof(PlayerPackage), 0, (const struct sockaddr *) &broadcast, len) < 0)
             perror("Error sending update. ");
 
         a = (a + 1) % 256;
@@ -117,16 +133,19 @@ void runClient(Game *game) {
     game->currentPlayer->status = GAME_IN_PROGRESS;
     broadcast.sin_addr.s_addr = inet_addr(game->opponent->ip);
 
-    printf("Starting to send updates to opponent %s\n", game->opponent->ip);
-
     do {
-        if (sendto(_socketClient, game->currentPlayer, sizeof(Player), 0, (const struct sockaddr *) &broadcast, len) < 0)
+        package->score = game->currentPlayer->score,
+        package->status = game->currentPlayer->status;
+        memcpy(&package->game_field, game->currentPlayer->game_field, GAME_FIELD_HEIGHT*GAME_FIELD_WIDTH*sizeof(Cell));
+
+        if (sendto(_socketClient, package, sizeof(PlayerPackage), 0, (const struct sockaddr *)&broadcast, len) < 0)
             printf("Error sending update.\n");
 
         sleep(1);
 
     } while (game->currentPlayer->status != GAME_END);
 
+    free(package);
     printf("Ending update sender...\n");
     return NULL;
 }

@@ -1,0 +1,1 @@
+CMakeLists.txt not found in /home/mozguana/Desktop/semestral_work/apo_semestral_work
