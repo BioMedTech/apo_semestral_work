@@ -24,49 +24,40 @@
 #include "mzapo_parlcd.h"
 #include "mzapo_phys.h"
 #include "mzapo_regs.h"
-#include "core/lcd_logic/lcd_logic.h"
-#include "core/Game/Game.h"
-#include "core/knobs_logics/knobs_logic.h"
-#include "core/Figure/Figure.h"
-#include "core/Server/server.h"
+#include "display/display.h"
+#include "Game/Game.h"
+#include "Server/server.h"
 
 pthread_t game_thread, client_thread, server_thread, light_thread;
 
-
-unsigned char *mem;
-
 void *gameThread(void *vargp) {
-    Game *game = (Game *)vargp;
+    Game *game = (Game *) vargp;
     playGame(game);
 }
 
-void *lightThread(void *vargp){
-    Game *game = (Game *)vargp;
-    while(1){
-        // if (game->ledColor){
-        //     setLedValues(game->ledColor);
-        //     sleep(1);
-        // }
+void *lightThread(void *vargp) {
+    Game *game = (Game *) vargp;
+    while (1) {
         sleep(0.2);
     }
 }
 
-void initTreads(Game *game) {
+void initThreads(Game *game) {
     pthread_create(&game_thread, NULL, gameThread, game);
     pthread_create(&light_thread, NULL, lightThread, game);
 }
 
-void initServerThreads(Game *game){
+void initServerThreads(Game *game) {
     pthread_create(&client_thread, NULL, runClient, game);
     pthread_create(&server_thread, NULL, runServer, game);
 }
 
-void joinThreads(){
+void joinThreads() {
     pthread_join(game_thread, NULL);
     pthread_join(light_thread, NULL);
 }
 
-void joinServerThreads(){
+void joinServerThreads() {
     pthread_join(server_thread, NULL);
     pthread_join(client_thread, NULL);
 }
@@ -74,15 +65,17 @@ void joinServerThreads(){
 int main(int argc, char *argv[]) {
     Game *game = initGame();
     printMenu(game);
- 
-    if (game->mode == TWO_PLAYERS){
+
+    if (game->mode == TWO_PLAYERS) {
         game->opponent = initPlayer();
         initServerThreads(game);
     }
 
-    initTreads(game);
+    initThreads(game);
     joinServerThreads();
     joinThreads();
-   
+    
+    freeData();
+
     return 0;
 }
