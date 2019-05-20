@@ -76,6 +76,7 @@ int main(int argc, char *argv[]) {
     joinThreads();
     
     freeData();
+    freeGame(game);
 
     return 0;
 }

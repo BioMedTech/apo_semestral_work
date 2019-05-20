@@ -19,7 +19,6 @@
 
 
 
-// every grid item should be 16*16
 /*
       
 *-------------*

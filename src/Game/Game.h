@@ -45,5 +45,6 @@ typedef struct PersonRating{
 Game *initGame();
 void playGame(Game *game);
 void printMenu(Game *game);
+void freeGame(Game *game);
 
 #endif //MZAPO_TEMPLATE_GAME_H

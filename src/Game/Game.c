@@ -302,3 +302,13 @@ void playGame(Game *game) {
 
     return NULL;
 }
+
+void freeGame(Game *game){
+    free(game->currentFigure);
+    free(game->nextFigure);
+    freePlayer(game->currentFigure);
+    if (game->mode==TWO_PLAYERS){
+        freePlayer(game->opponent);
+    }
+    free(game);
+}

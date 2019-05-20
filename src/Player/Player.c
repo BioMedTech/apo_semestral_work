@@ -13,3 +13,7 @@ Player *initPlayer(){
     return player;
 }
 
+void freePlayer(Player *player){
+    free(player->game_field);
+    free(player);
+}

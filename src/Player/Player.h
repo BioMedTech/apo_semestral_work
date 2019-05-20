@@ -24,5 +24,6 @@ typedef struct Player {
 } Player;
 
 Player *initPlayer();
+void freePlayer(Player *player);
 
 #endif //MZAPO_TEMPLATE_PLAYER_H

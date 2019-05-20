@@ -9,7 +9,8 @@ Cell *getCell(Cell *game_field, int row, int col) {
 /*
  * Fill cell with state nd color
  */
-void fillCell(Cell *game_field, int row, int col, int color, int state) {
+void fillGameFieldCell(Cell *game_field, int row, int col, int color, int state)
+{
     Cell *cell = getCell(game_field, row, col);
     cell->color = color;
     cell->state = state;

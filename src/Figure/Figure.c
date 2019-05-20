@@ -92,7 +92,7 @@ void addFigureToField(Figure *figure, Cell *gameField, int next)
         if (next){
             fillCell(figures[i + 1] + 10, figures[i] + 14, figure->color);
         } else {
-            fillCell(gameField, figures[i + 1] + figure->offset.y, figures[i] + figure->offset.x, figure->color, 2);
+            fillGameFieldCell(gameField, figures[i + 1] + figure->offset.y, figures[i] + figure->offset.x, figure->color, 2);
         }
     }
 }
@@ -116,7 +116,7 @@ int moveFigure(int vector_x, int vector_y, Figure *figure, Player *player)
             x = figure->offset.x + figure->state[i].x;
             y = figure->offset.y + figure->state[i].y;
 
-            fillCell(gameField, y, x, 0x0, 0);
+            fillGameFieldCell(gameField, y, x, 0x0, 0);
         }
 
         figure->offset.x += vector_x;
@@ -127,7 +127,7 @@ int moveFigure(int vector_x, int vector_y, Figure *figure, Player *player)
             x = figure->offset.x + figure->state[i].x;
             y = figure->offset.y + figure->state[i].y;
 
-            fillCell(gameField, y, x, figure->color, 2);
+            fillGameFieldCell(gameField, y, x, figure->color, 2);
         }
     } else if (collision == 1 && vector_y){
         success = 0;
@@ -174,7 +174,7 @@ void rotateFigure(Figure *figure, int clock, Cell *gameField)
         if (!collision){
             for (int i = 0; i < FIGURE_CELL_QUANTITY; i++)
             {
-                fillCell(gameField, figure->state[i].y + figure->offset.y, figure->state[i].x + figure->offset.x, 0x0, 0);
+                fillGameFieldCell(gameField, figure->state[i].y + figure->offset.y, figure->state[i].x + figure->offset.x, 0x0, 0);
             }
 
             memcpy(figure->state, testCoords, sizeof(Coords) * 4);
@@ -184,7 +184,7 @@ void rotateFigure(Figure *figure, int clock, Cell *gameField)
                 x = figure->state[i].x + figure->offset.x;
                 y = figure->state[i].y + figure->offset.y;
                 
-                fillCell(gameField, y, x, figure->color, 2);
+                fillGameFieldCell(gameField, y, x, figure->color, 2);
             }   
         }
         
@@ -230,7 +230,7 @@ void changePlayerField(Figure *figure, Player *player, int state)
         x = figure->state[i].x + figure->offset.x;
         y = figure->state[i].y + figure->offset.y;
 
-        fillCell(gameField, y, x, figure->color, state);
+        fillGameFieldCell(gameField, y, x, figure->color, state);
     }
     int count = 0;
 
