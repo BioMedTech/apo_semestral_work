@@ -38,7 +38,8 @@ void redraw(unsigned char *parlcd_mem_base, Cell *playerField, Cell *opponentFie
                 parlcd_write_data(parlcd_mem_base, 0xFFFF);
             } else if (opponentField && j >= GAME_FIELD_WIDTH * 2 * CELL_SIZE) {
                 // draw opponent field if exists
-                parlcd_write_data(parlcd_mem_base, getCell(opponentField, i / CELL_SIZE, j / CELL_SIZE)->color);
+                Cell *cell = getCell(opponentField, i / CELL_SIZE - 2, j / CELL_SIZE);
+                parlcd_write_data(parlcd_mem_base, cell->state ? cell->color : 0x0);
             } else if (opponentField && j == GAME_FIELD_WIDTH * 2 * CELL_SIZE - 1) {
                 // draw border of opponent field if exists
                 parlcd_write_data(parlcd_mem_base, 0xFFFF);

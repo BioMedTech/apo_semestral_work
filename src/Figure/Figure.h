@@ -11,7 +11,7 @@
 #include "../display/display.h"
 #include "../Player/Player.h"
 
-#define FIGURE_TYPES_QUANTITY 5
+#define FIGURE_TYPES_QUANTITY 7
 #define FIGURE_CELL_QUANTITY 4
 
 typedef struct Coords{
@@ -29,7 +29,8 @@ typedef struct Figure {
 
 int checkFullRow(int row, Cell *gameField);
 Figure *initRandomFigure();
-int removeRow(int row, Cell *gameField);
+void changeFigure(Figure *figure);
+ int removeRow(int row, Cell *gameField);
 void addFigureToField(Figure *figure, Cell *gameField, int next);
 int moveFigure(int vector_x, int vector_y, Figure *figure, Player *player);
 void rotateFigure(Figure *figure, int clock, Cell *gameField);

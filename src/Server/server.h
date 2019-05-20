@@ -15,13 +15,14 @@
 #include "../Player/Player.h"
 
 #define TARGET_PORT 5678
+#define WAITING_PERIOD 2500
 
 
 typedef struct PlayerPackage
 {
     int score;
-    struct Cell game_field[GAME_FIELD_HEIGHT * GAME_FIELD_WIDTH];
     enum GameStatus status;
+    struct Cell game_field[GAME_FIELD_HEIGHT * GAME_FIELD_WIDTH];
 } PlayerPackage;
 
 void runServer(Game *game);

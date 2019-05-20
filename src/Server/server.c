@@ -22,7 +22,7 @@ void runServer(Game *game) {
     ioctl(_socket, SIOCGIFADDR, &ifr);
 
     strncpy(game->currentPlayer->ip, inet_ntoa(((struct sockaddr_in *) &ifr.ifr_addr)->sin_addr), 15);
-    printf("My ip: %s\n", game->currentPlayer->ip);
+
     /*Bind socket with address struct*/
     if (bind(_socket, (struct sockaddr *) &serverAddr, sizeof(serverAddr)) == SO_ERROR) {
         perror("Bind: ");
@@ -38,48 +38,53 @@ void runServer(Game *game) {
 
     printf("Server is listening on port %d\n", TARGET_PORT);
     while (_continue) {
-        if (nBytes = recvfrom(_socket, package, sizeof(PlayerPackage), 0, (const struct sockaddr *) &clientAddr,
-                              &clientAddrSize) == SO_ERROR) {
-            perror("Socket error! ");
-            getchar();
-            return 1;
-        }
+        if ((nBytes = recvfrom(_socket, package, sizeof(PlayerPackage), 0, (const struct sockaddr *)&clientAddr,
+                          &clientAddrSize)) < 0)
+            perror("recvfrom: 43");
 
         char *ip = inet_ntoa(clientAddr.sin_addr);
-        // printf("Recieved from %s, %d\n", ip, strncmp(game->currentPlayer->ip, ip, 15));
 
         if (strncmp(game->currentPlayer->ip, ip, 15) != 0) {
             _continue = 0;
             strncpy(game->opponent->ip, ip, 15);
-            found_ip=1;
+            found_ip = 1;
         }
     }
-
-    printf("%s\n", game->opponent->ip);
 
     int gameContinue = 1;
     game->currentPlayer->status == GAME_INIT;
 
     while (gameContinue) {
-        if (nBytes = recvfrom(_socket, package, sizeof(PlayerPackage), 0, &clientAddr,
-                              &clientAddrSize) == SO_ERROR) {
-            fprintf(stderr, "Socket error!\n");
-            getchar();
+        
+        if ((nBytes = recvfrom(_socket, package, sizeof(PlayerPackage), 0, &clientAddr,
+                              &clientAddrSize)) < 0) {
+            perror("Socket error");
             return 1;
         }
         
         if (!strncmp(game->opponent->ip, inet_ntoa(clientAddr.sin_addr), 15)){
             memcpy(game->opponent->game_field, &package->game_field, GAME_FIELD_HEIGHT * GAME_FIELD_WIDTH * sizeof(Cell));
-            game->opponent->score=package->score;
-            game->opponent->status=package->status;
+            game->opponent->score = package->score;
+            game->opponent->status = package->status;
         }
-        gameContinue = game->opponent->status != GAME_END;
+       
+        if (game->opponent->status == GAME_END)
+        {
+            clientAddr.sin_addr.s_addr = inet_addr(game->opponent->ip);
+            gameContinue=0;
+            package->status = GAME_END;
+            printf("End of opponent game, sending confirmation\n");
+            if (sendto(_socket, package, sizeof(PlayerPackage), 0, (const struct sockaddr *)&clientAddr, clientAddrSize) < 0) {
+                perror("sendto: 76");
+            }
+        }
     }
     
     free(game->opponent->game_field);
     game->opponent->game_field = NULL;
     
     free(package);
+    printf("Ending recieving updates...\n");
 
     return NULL;
 }
@@ -108,14 +113,11 @@ void runClient(Game *game) {
     char ipbuf[16];
     int a = 0;
 
-    PlayerPackage *package=calloc(1, sizeof(PlayerPackage));
+    PlayerPackage *package = calloc(1, sizeof(PlayerPackage));
     
     do {
         snprintf(ipbuf, sizeof ipbuf, "192.168.202.%d", a);
         broadcast.sin_addr.s_addr = inet_addr(ipbuf);
-        if (a == 203 || a == 210)
-            printf("Sending to: %s\n", inet_ntoa(broadcast.sin_addr));
-
         if (sendto(_socketClient, package, sizeof(PlayerPackage), 0, (const struct sockaddr *) &broadcast, len) < 0)
             perror("Error sending update. ");
 
@@ -132,13 +134,28 @@ void runClient(Game *game) {
         memcpy(&package->game_field, game->currentPlayer->game_field, GAME_FIELD_HEIGHT*GAME_FIELD_WIDTH*sizeof(Cell));
 
         if (sendto(_socketClient, package, sizeof(PlayerPackage), 0, (const struct sockaddr *)&broadcast, len) < 0)
-            printf("Error sending update.\n");
+            perror("Error sending update");
 
-        sleep(0.5);
+        sleep(0.3);
     } while (game->currentPlayer->status != GAME_END);
+
+    int _continue=1;
     
-    package->status = game->currentPlayer->status;
-    sendto(_socketClient, package, sizeof(PlayerPackage), 0, (const struct sockaddr *)&broadcast, len);
+    while (_continue)
+    {
+        package->status = GAME_END;
+        printf("End of my game, sending to opponent\n");
+
+        if (sendto(_socketClient, package, sizeof(PlayerPackage), 0, (const struct sockaddr *)&broadcast, len) < 0)
+            perror("sendto: 148");
+        if (recvfrom(_socketClient, package, sizeof(PlayerPackage), 0, NULL, NULL) < 0)
+            perror("recvfrom: 151");
+
+        printf("Confirmation recieved\n");
+        _continue = package->status != GAME_END;
+    }
+    
+
     free(package);
     
     printf("Ending update sender...\n");

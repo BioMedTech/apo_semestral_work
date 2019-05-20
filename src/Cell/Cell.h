@@ -8,8 +8,8 @@
 
 // every Cell should be 16*16
 typedef struct Cell {
-    uint16_t color;
     int state; //shows contents of the current cell: 0-nothing, 1-filled cell, 2-cell of currently falling figure
+    uint16_t color;
 } Cell;
 
 void fillGameFieldCell(Cell *game_field, int row, int col, int color, int state);

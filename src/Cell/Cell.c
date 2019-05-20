@@ -26,6 +26,9 @@ int getCellState(Cell *game_field, int row, int col) {
  * Replace ${dest_row} of the game_field with ${src_row}
  */
 void copyRow(Cell *game_field, int src_row, int dest_row) {
-    memcpy(&game_field[dest_row * GAME_FIELD_WIDTH], &game_field[src_row * GAME_FIELD_WIDTH],
-           sizeof(Cell) * GAME_FIELD_WIDTH);
+    memcpy(
+        &game_field[dest_row * GAME_FIELD_WIDTH],
+        &game_field[src_row * GAME_FIELD_WIDTH],
+        sizeof(Cell) * GAME_FIELD_WIDTH
+    );
 }

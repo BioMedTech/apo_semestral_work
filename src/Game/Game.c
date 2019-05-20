@@ -11,6 +11,7 @@ Game *initGame() {
     mem = initDisplay();
     Game *newGame = (Game *) calloc(1, sizeof(Game));
     newGame->currentPlayer = initPlayer();
+    pthread_mutex_init(&newGame->opponentMutex, NULL);
 
     return newGame;
 }
@@ -155,12 +156,19 @@ void printMenu(Game *game) {
 // Print score in tne score area if the screen
 void printScore(int score, char buffer[], int bufferSize) {
     snprintf(buffer, bufferSize, "SCORE: %d", score);
-    drawString(buffer, 3, 25, 0xFFFF, 0x0, 1);
-    drawString("Next:", 6, 26, 0xFFFF, 0x0, 1);
+    drawString(buffer, 2, 25, 0xFFFF, 0x0, 1);
+    drawString("Next:", 7, 26, 0xFFFF, 0x0, 1);
 }
 
+void printOpponentScore(int score, char buffer[], int bufferSize){
+    drawString("OPPONENT'S", 4, 25, 0xFFFF, 0x0, 1);
+    snprintf(buffer, bufferSize, "SCORE: %d", score);
+    drawString("                ", 5, 25, 0x0, 0x0, 1);
+    drawString(buffer, 5, 25, 0xFFFF, 0x0, 1);
+}
 
-void playGame(Game *game) {
+void playGame(Game *game)
+{
     sleep(1);
     clock_t before = clock();
 
@@ -228,22 +236,22 @@ void playGame(Game *game) {
         }
 
         new_state = getKnobsValue();
+        printOpponentScore(game->opponent->score, buffer, sizeof buffer);
         redraw(mem, game->currentPlayer->game_field, game->mode == TWO_PLAYERS ? game->opponent->game_field : NULL);
 
         if (!success) {
             clearData();
-            Figure *new_figure = initRandomFigure();
 
             memcpy(game->currentFigure, game->nextFigure, sizeof(Figure));
-            memcpy(game->nextFigure, new_figure, sizeof(Figure));
+            changeFigure(game->nextFigure);
 
             addFigureToField(game->currentFigure, game->currentPlayer->game_field, 0);
             addFigureToField(game->nextFigure, game->currentPlayer->game_field, 1);
 
-            free(new_figure);
             success = 1;
 
             printScore(game->currentPlayer->score, buffer, sizeof buffer);
+            
             if (game->currentPlayer->score >= 1000 && !(game->currentPlayer->score % 1000)) {
                 period -= 10;
             }
@@ -254,16 +262,18 @@ void playGame(Game *game) {
 
         }
 
+        // pthread_mutex_lock(&game->opponentMutex);
         if (game->mode == TWO_PLAYERS && !game->opponent->game_field) {
             char buffer[100];
             snprintf(buffer, sizeof buffer, "SCORE IS %d", game->opponent->score);
 
-            drawString("END OF THE GAME!", 5, 40, 0xFFFF, 0x0, 1);
-            drawString("YOUR OPPONENT'S ", 8, 40, 0xFFFF, 0x0, 1);
-            drawString(buffer, 9, 43, 0xFFFF, 0x0, 1);
+            drawString("END OF THE GAME!", 5, 42, 0xFFFF, 0x0, 1);
+            drawString("YOUR OPPONENT'S ", 8, 43, 0xFFFF, 0x0, 1);
+            drawString(buffer, 9, 45, 0xFFFF, 0x0, 1);
         }
+        // pthread_mutex_unlock(&game->opponentMutex);
 
-        parlcd_delay(16);
+        parlcd_delay(10);
     }
 
     game->currentPlayer->status = GAME_END;
@@ -276,12 +286,13 @@ void playGame(Game *game) {
     redrawData(mem);
 
     if (game->mode == TWO_PLAYERS) {
+       
         while (game->opponent->game_field) {
             redraw(mem, NULL, game->opponent->game_field);
             parlcd_delay(16);
         }
+
         clearData();
-        sleep(1);
 
         drawString(buffer, 8, 15, 0xFFFF, 0x0, 1);
         snprintf(buffer, sizeof buffer, "YOUR OPPONENT'S SCORE IS %d", game->opponent->score);
@@ -297,18 +308,18 @@ void playGame(Game *game) {
         redrawData(mem);
     }
 
-    showRatingTable(game->currentPlayer);
-    redrawData(mem);
-
+    // showRatingTable(game->currentPlayer);
+    // redrawData(mem);
+    printf("Ending the game...\n");
     return NULL;
 }
 
 void freeGame(Game *game){
     free(game->currentFigure);
     free(game->nextFigure);
-    freePlayer(game->currentFigure);
+    freePlayer(game->currentPlayer);
     if (game->mode==TWO_PLAYERS){
-        freePlayer(game->opponent);
+        free(game->opponent);
     }
     free(game);
 }

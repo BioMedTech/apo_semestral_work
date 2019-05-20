@@ -47,8 +47,26 @@ static int figures[] = {
     **
 
     */
-    0, -1, 0, 0, 0, 1, -1, -1,
+    0, -1, 0, 0, 0, 1, -1, 1,
 
+    /*
+
+    s
+     
+     **
+    **
+
+    */
+    1, 0, 0, 0, 0, 1, 1, 1,
+    /*
+
+    z
+     
+    **
+     **
+
+    */
+    -1, 0, 0, 0, 0, 1, 1, 1,
     /*
     T
      *
@@ -60,22 +78,22 @@ static int figures[] = {
      I
     ****
     */
-    -1, 0, 0, 0, 1, 0, 2, 0
-    };
+    -1, 0, 0, 0, 1, 0, 2, 0};
 
 // Initialize random figure with random color, thet always be in the top of the screen
 Figure *initRandomFigure()
 {
     Figure *figure = (Figure *)calloc(1, sizeof(Figure));
+    changeFigure(figure);
+    return figure;
+}
+
+void changeFigure(Figure *figure){
     figure->type = random() % FIGURE_TYPES_QUANTITY;
     figure->offset.x = 5;
     figure->offset.y = 1;
     figure->color = colors[random() % 5];
-
-
-    return figure;
 }
-
 /*
  * Draw figure to the field
  * @param figure - figure to draw
