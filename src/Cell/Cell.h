@@ -2,6 +2,7 @@
 #define MZAPO_TEMPLATE_CELL_H
 
 #include <stdint.h>
+#include <string.h>
 
 #define GAME_FIELD_WIDTH 10
 #define GAME_FIELD_HEIGHT 20

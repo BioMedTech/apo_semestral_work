@@ -4,19 +4,6 @@
 
 #include "Figure.h"
 
-// colors for figures
-static uint16_t colors[] = {
-    //red
-    0xF800,
-    //green
-    0x07E0,
-    //blue
-    0x001F,
-    //lightblue
-    0x07FF,
-    //yellow
-    0xFFE0
-};
 
 // matrix of all possible figures
 static int figures[] = {
@@ -57,7 +44,7 @@ static int figures[] = {
     **
 
     */
-    1, 0, 0, 0, 0, 1, 1, 1,
+    1, 0, 0, 0, 0, 1, -1, 1,
     /*
 
     z
@@ -92,7 +79,7 @@ void changeFigure(Figure *figure){
     figure->type = random() % FIGURE_TYPES_QUANTITY;
     figure->offset.x = 5;
     figure->offset.y = 1;
-    figure->color = colors[random() % 5];
+    figure->color = colors[random() % COLOR_QUANTITY];
 }
 /*
  * Draw figure to the field

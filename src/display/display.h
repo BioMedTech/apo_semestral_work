@@ -12,12 +12,25 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "../mzapo_parlcd.h"
 #include "../mzapo_regs.h"
 #include "../font_types.h"
 #include "../Player/Player.h"
 
-
+#define COLOR_QUANTITY 5
+static uint16_t colors[] = {
+    //blue
+    0x001F,
+    //green
+    0x07E0,
+    //lightblue
+    0x07FF,
+    //red
+    0xF800,
+    //yellow
+    0xFFE0
+    };
 
 /*
       

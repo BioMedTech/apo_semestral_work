@@ -33,18 +33,43 @@ pthread_t game_thread, client_thread, server_thread, light_thread;
 void *gameThread(void *vargp) {
     Game *game = (Game *) vargp;
     playGame(game);
+    return NULL;
 }
 
-// void *lightThread(void *vargp) {
-//     Game *game = (Game *) vargp;
-//     while (1) {
-//         sleep(0.2);
-//     }
-// }
+uint32_t convertToHex(uint16_t color)
+{
+    uint8_t r = (color >> 8) & 0xf8;
+    uint8_t g= (color >> 3) & 0xfc;
+    uint8_t b = (color << 3);
+    return ((r & 0xff) << 16) + ((g & 0xff) << 8) + (b & 0xff);
+}
+
+void *lightThread(void *vargp)
+{
+    Game *game = (Game *)vargp;
+    uint16_t curr_color = colors[1];
+    // uint32_t curr_color = 0x0F000F0;
+    
+    while (!game->gameEnd)
+    {
+        curr_color+=0x0001;
+        if (curr_color >= 0xFFFF){
+            curr_color = colors[1];
+        }
+        // printf("Curr color: %X\n", curr_color);
+        setLedValues(convertToHex(curr_color));
+        sleep(1);
+    }
+
+    setLedValues(0xFF0000);
+    sleep(1);
+    setLedValues(0x0);
+    return NULL;
+}
 
 void initThreads(Game *game) {
     pthread_create(&game_thread, NULL, gameThread, game);
-    // pthread_create(&light_thread, NULL, lightThread, game);
+    pthread_create(&light_thread, NULL, lightThread, game);
 }
 
 void initServerThreads(Game *game) {
@@ -54,7 +79,7 @@ void initServerThreads(Game *game) {
 
 void joinThreads() {
     pthread_join(game_thread, NULL);
-    // pthread_join(light_thread, NULL);
+    pthread_join(light_thread, NULL);
 }
 
 void joinServerThreads() {

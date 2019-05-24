@@ -17,10 +17,10 @@ TARGET_EXE = main
 #TARGET_IP ?= 192.168.202.127
 ifeq ($(TARGET_IP)$(filter run,$(MAKECMDGOALS)),run)
 $(warning The target IP address is not set)
-$(warning Run as "TARGET_IP=192.168.202.213 make run" or modify Makefile)
-TARGET_IP?=192.168.202.213
+$(warning Run as "TARGET_IP=192.168.202.214 make run" or modify Makefile)
+TARGET_IP?=192.168.202.214
 endif
-TARGET_IP?=192.168.202.213
+TARGET_IP?=192.168.202.214
 TARGET_DIR?=/tmp/$(shell whoami)
 TARGET_USER?=root
 # for use from Eduroam network use TARGET_IP=localhost and enable next line
