@@ -25,7 +25,7 @@ typedef struct PlayerPackage
     struct Cell game_field[GAME_FIELD_HEIGHT * GAME_FIELD_WIDTH];
 } PlayerPackage;
 
-void runServer(Game *game);
-void runClient(Game *game);
+void *runServer(Game *game);
+void *runClient(Game *game);
 
 #endif

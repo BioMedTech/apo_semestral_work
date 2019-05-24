@@ -34,8 +34,7 @@ typedef struct Game {
     struct Figure *currentFigure;
     struct Figure *nextFigure;
     enum GameMode mode;
-    int end;
-    // pthread_mutex_t opponentMutex;
+    int gameEnd;
 } Game;
 
 typedef struct PersonRating{

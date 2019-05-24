@@ -9,60 +9,9 @@
 Game *initGame() {
     Game *newGame = (Game *) calloc(1, sizeof(Game));
     newGame->currentPlayer = initPlayer();
-    newGame->end=0;
+    newGame->gameEnd = 0;
 
     return newGame;
-}
-
-void printPersonRating(FILE *file, PersonRating rating, int place, char buffer[200], uint16_t col) {
-    snprintf(buffer, 200 * sizeof(char), "%d. DATE: %s, IP: %s, SCORE: %d", place, rating.time, rating.ip,
-             rating.score);
-    drawString(buffer, 3 + place, 4, col, 0x0, 1);
-    fwrite(&rating, sizeof(PersonRating), 1, file);
-}
-
-
-void showRatingTable(Player *currentPlayer) {
-    int lines = 0;
-    FILE *file = fopen("rating.txt", "w+");
-    fscanf(file, "%d", &lines);
-    PersonRating *rating = (PersonRating *) calloc(lines, sizeof(PersonRating));
-
-    int myPlace = lines + 1;
-
-    if (lines > 0) {
-        for (int i = 0; i < lines; i++) {
-
-            fread(&rating[i], sizeof(PersonRating), 1, file);
-
-            if (rating[i].score > currentPlayer->score) {
-                myPlace = i + 1;
-            }
-        }
-    }
-
-    PersonRating me;
-
-    time_t now;
-    struct tm *tme = localtime(time(&now));
-
-    char buffer[200];
-    snprintf(me.time, 12 * sizeof(char), "%.2d.%.2d.%d\0", tme->tm_mday, tme->tm_mon + 1, tme->tm_year + 1900);
-    me.score = currentPlayer->score;
-    strncpy(me.ip, currentPlayer->ip, 15);
-
-    fprintf(file, "%d", lines);
-
-    for (int i = 0; i < lines + 1; i++) {
-        if (i == myPlace) {
-            printPersonRating(file, me, i, buffer, RED);
-        } else {
-            printPersonRating(file, rating[i], i, buffer, 0x0);
-        }
-    }
-
-    free(rating);
-    fclose(file);
 }
 
 /*
@@ -167,7 +116,6 @@ void printOpponentScore(int score, char buffer[], int bufferSize){
 
 void playGame(Game *game)
 {
-    sleep(1);
     clock_t before = clock();
 
     Knobs_state state = getKnobsValue();
@@ -235,8 +183,8 @@ void playGame(Game *game)
         }
 
         new_state = getKnobsValue();
-        printOpponentScore(game->opponent->score, buffer, sizeof buffer);
-        // redraw(mem, game->currentPlayer->game_field, game->mode == TWO_PLAYERS ? game->opponent->game_field : NULL);
+        if (game->mode==TWO_PLAYERS) printOpponentScore(game->opponent->score, buffer, sizeof buffer);
+        redraw(mem, game->currentPlayer->game_field, game->mode == TWO_PLAYERS ? game->opponent->game_field : NULL);
 
         if (!success) {
             clearData();
@@ -308,11 +256,8 @@ void playGame(Game *game)
         // redrawData(mem);
     }
 
-    // showRatingTable(game->currentPlayer);
-    // redrawData(mem);
+    game->gameEnd = 1;
     printf("Ending the game...\n");
-    game->end = 1;
-    return NULL;
 }
 
 void freeGame(Game *game){

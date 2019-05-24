@@ -1,5 +1,18 @@
 #include "Cell.h"
 
+static uint16_t colors[] = {
+    //red
+    0xF800,
+    //green
+    0x07E0,
+    //blue
+    0x001F,
+    //lightblue
+    0x07FF,
+    //yellow
+    0xFFE0
+    };
+
 /*
  * Get cell from array of cells
  */

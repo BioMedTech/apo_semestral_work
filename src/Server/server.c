@@ -2,10 +2,10 @@
 int found_ip=0;
 
 
-void runServer(Game *game) {
+void *runServer(Game *game) {
     int _socket, nBytes;
     struct sockaddr_in serverAddr, clientAddr;
-    socklen_t serverAddrSize, clientAddrSize;
+    socklen_t  clientAddrSize;
     struct ifreq ifr;
 
     /*Create UDP socket*/
@@ -30,7 +30,6 @@ void runServer(Game *game) {
     }
 
     /*Initialize size variable to be used later on*/
-    serverAddrSize = sizeof serverAddr;
     clientAddrSize = sizeof clientAddr;
 
     int _continue = 1;
@@ -89,7 +88,7 @@ void runServer(Game *game) {
 }
 
 
-void runClient(Game *game) {
+void *runClient(Game *game) {
     ssize_t n;
     struct sockaddr_in broadcast;
     int _socketClient = socket(AF_INET, SOCK_DGRAM, 0);
@@ -108,7 +107,6 @@ void runClient(Game *game) {
     broadcast.sin_family = AF_INET;
     broadcast.sin_port = htons(TARGET_PORT);
 
-    int once = 1;
     char ipbuf[16];
     int a = 0;
 
