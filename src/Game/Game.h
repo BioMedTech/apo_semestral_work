@@ -37,12 +37,6 @@ typedef struct Game {
     int gameEnd;
 } Game;
 
-typedef struct PersonRating{
-    char time[12];
-    int score;
-    char ip[16];
-}PersonRating;
-
 Game *initGame();
 void playGame(Game *game);
 void printMenu(Game *game);
