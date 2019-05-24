@@ -28,21 +28,58 @@
 #include "Game/Game.h"
 #include "Server/server.h"
 
-pthread_t game_thread, client_thread, server_thread, light_thread;
+pthread_t game_thread, client_thread, server_thread, light_thread, screen_thread;
 
-void *gameThread(void *vargp) {
-    Game *game = (Game *) vargp;
+
+void *gameThread(void *arg) {
+    Game *game = (Game *) arg;
     playGame(game);
 }
 
-// void *lightThread(void *vargp) {
-//     Game *game = (Game *) vargp;
-//     while (1) {
-//         sleep(0.2);
-//     }
-// }
 
-void initThreads(Game *game) {
+void *lightThread(void *arg) {
+    Game *game = (Game *) arg;
+    int _continue=1;
+    uint32_t color=0x0;
+
+    while (_continue) {
+        color += 0x1;
+        setLedValues(color);
+        
+        if (color == 0xffffff){
+            color = 0x0;
+        }
+        _continue = game->mode == TWO_PLAYERS ? game->currentPlayer->status != GAME_END : (game->currentPlayer->status != GAME_END && game->opponent->status != GAME_END);
+        sleep(0.2);
+    }
+    return NULL;
+}
+
+void screenThread(void *arg)
+{
+    unsigned char *mem = initDisplay();
+    Game *game = (Game *)arg;
+    int _continue = 1;
+    uint32_t color = 0x0;
+
+    while (_continue)
+    {
+        color = color == 0xffffff ? color+0x1 : 0x0;
+        setLedValues(color);
+        if (game->currentPlayer->status == GAME_IN_PROGRESS || (game->mode == TWO_PLAYERS && game->opponent->status == GAME_IN_PROGRESS)){
+            redraw(mem, game->currentPlayer->game_field, game->mode == TWO_PLAYERS ? game->opponent->game_field : NULL);
+        } else {
+            redrawData(mem);
+        }
+        parlcd_delay(16);
+        _continue = !game->end;
+    }
+    return NULL;
+}
+
+void initThreads(Game *game)
+{
+    pthread_create(&screen_thread, NULL, screenThread, game);
     pthread_create(&game_thread, NULL, gameThread, game);
     // pthread_create(&light_thread, NULL, lightThread, game);
 }
@@ -55,6 +92,7 @@ void initServerThreads(Game *game) {
 void joinThreads() {
     pthread_join(game_thread, NULL);
     // pthread_join(light_thread, NULL);
+    pthread_join(&screen_thread, NULL);
 }
 
 void joinServerThreads() {

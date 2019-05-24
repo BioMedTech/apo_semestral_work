@@ -20,6 +20,8 @@ unsigned char *initDisplay() {
     return parlcd_mem_base;
 }
 
+
+
 /*
  * Redraw display while playing, when display is separated:
  * - in two parts in case of two players(player field and additional data like score and next figure),

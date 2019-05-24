@@ -73,7 +73,6 @@ void runServer(Game *game) {
             clientAddr.sin_addr.s_addr = inet_addr(game->opponent->ip);
             gameContinue=0;
             package->status = GAME_END;
-            printf("End of opponent game, sending confirmation\n");
             if (sendto(_socket, package, sizeof(PlayerPackage), 0, (const struct sockaddr *)&clientAddr, clientAddrSize) < 0) {
                 perror("sendto: 76");
             }
@@ -131,7 +130,7 @@ void runClient(Game *game) {
     do {
         package->score = game->currentPlayer->score,
         package->status = game->currentPlayer->status;
-        memcpy(&package->game_field, game->currentPlayer->game_field, GAME_FIELD_HEIGHT*GAME_FIELD_WIDTH*sizeof(Cell));
+        memcpy(&package->game_field, game->currentPlayer->game_field, GAME_FIELD_HEIGHT*GAME_FIELD_WIDTH * sizeof(Cell));
 
         if (sendto(_socketClient, package, sizeof(PlayerPackage), 0, (const struct sockaddr *)&broadcast, len) < 0)
             perror("Error sending update");
@@ -144,14 +143,11 @@ void runClient(Game *game) {
     while (_continue)
     {
         package->status = GAME_END;
-        printf("End of my game, sending to opponent\n");
-
         if (sendto(_socketClient, package, sizeof(PlayerPackage), 0, (const struct sockaddr *)&broadcast, len) < 0)
             perror("sendto: 148");
         if (recvfrom(_socketClient, package, sizeof(PlayerPackage), 0, NULL, NULL) < 0)
             perror("recvfrom: 151");
 
-        printf("Confirmation recieved\n");
         _continue = package->status != GAME_END;
     }
     

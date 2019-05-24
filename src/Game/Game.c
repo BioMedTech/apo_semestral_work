@@ -4,14 +4,12 @@
 
 #include "Game.h"
 
-unsigned char *mem;
 
 // Init display and game with one player
 Game *initGame() {
-    mem = initDisplay();
     Game *newGame = (Game *) calloc(1, sizeof(Game));
     newGame->currentPlayer = initPlayer();
-    pthread_mutex_init(&newGame->opponentMutex, NULL);
+    newGame->end=0;
 
     return newGame;
 }
@@ -85,7 +83,7 @@ void printMenu(Game *game) {
     // Print label picture
     clearData();
     fillBgImg("/tmp/mozguana/logo.ppm");
-    redrawData(mem);
+    // redrawData(mem);
 
     while (_continue) {
         state = getKnobsValue();
@@ -108,12 +106,12 @@ void printMenu(Game *game) {
             _continue = 0;
         }
 
-        redrawData(mem);
-        parlcd_delay(20);
+        // redrawData(mem);
+        // parlcd_delay(20);
     }
 
     clearData();
-    redrawData(mem);
+    // redrawData(mem);
 
 
     int level = 0;
@@ -140,8 +138,8 @@ void printMenu(Game *game) {
         drawString("MEDIUM", 7, 12, 0xFFFF, level == 1 ? BLUE : 0x0, 2);
         drawString("HARD", 7, 22, 0xFFFF, level == 2 ? BLUE : 0x0, 2);
 
-        redrawData(mem);
-        parlcd_delay(20);
+        // redrawData(mem);
+        // parlcd_delay(20);
 
         // Wait while red button won't be pressed
         if (!unlock && !state.rb) unlock = 1;
@@ -186,7 +184,7 @@ void playGame(Game *game)
         clearData();
         fillBgImg("/tmp/mozguana/logo.ppm");
         drawString("WAITING FOR THE OPPONENT", 6, 4, 0xFFFF, 0x0, 2);
-        redrawData(mem);
+        // redrawData(mem);
         int quantity = 0;
 
         while (game->currentPlayer->status != GAME_IN_PROGRESS) {
@@ -195,7 +193,7 @@ void playGame(Game *game)
                 drawString(". ", 7, 13 + i, 0xFFFF, 0x0, 2);
             }
             quantity = (quantity + 1) % 4;
-            redrawData(mem);
+            // redrawData(mem);
             sleep(1);
         };
     }
@@ -207,6 +205,7 @@ void playGame(Game *game)
     addFigureToField(game->currentFigure, game->currentPlayer->game_field, 0);
     addFigureToField(game->nextFigure, game->currentPlayer->game_field, 1);
     printScore(game->currentPlayer->score, buffer, sizeof buffer);
+    
 
     while (_continue) {
         if (new_state.gk - state.gk >= 4) {
@@ -237,7 +236,7 @@ void playGame(Game *game)
 
         new_state = getKnobsValue();
         printOpponentScore(game->opponent->score, buffer, sizeof buffer);
-        redraw(mem, game->currentPlayer->game_field, game->mode == TWO_PLAYERS ? game->opponent->game_field : NULL);
+        // redraw(mem, game->currentPlayer->game_field, game->mode == TWO_PLAYERS ? game->opponent->game_field : NULL);
 
         if (!success) {
             clearData();
@@ -273,7 +272,7 @@ void playGame(Game *game)
         }
         // pthread_mutex_unlock(&game->opponentMutex);
 
-        parlcd_delay(10);
+        // parlcd_delay(10);
     }
 
     game->currentPlayer->status = GAME_END;
@@ -283,13 +282,14 @@ void playGame(Game *game)
     clearData();
     drawString("END OF THE GAME!", 7, 8, 0xFFFF, 0x0, 1);
     drawString(buffer, 10, 8, 0xFFFF, 0x0, 1);
-    redrawData(mem);
+    // redrawData(mem);
 
     if (game->mode == TWO_PLAYERS) {
        
         while (game->opponent->game_field) {
-            redraw(mem, NULL, game->opponent->game_field);
-            parlcd_delay(16);
+            // redraw(mem, NULL, game->opponent->game_field);
+            // parlcd_delay(16);
+            sleep(0.5);
         }
 
         clearData();
@@ -305,12 +305,13 @@ void playGame(Game *game)
         } else {
             drawString("DRAW!", 6, 8, 0xFFFF, 0x0, 2);
         }
-        redrawData(mem);
+        // redrawData(mem);
     }
 
     // showRatingTable(game->currentPlayer);
     // redrawData(mem);
     printf("Ending the game...\n");
+    game->end = 1;
     return NULL;
 }
 
